@@ -30,28 +30,29 @@ func Handleuser(UserRepository repositories.UserRepository) *handler {
 func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(usersdto.GetUserRequest)
+	// request := new(usersdto.GetUserRequest)
+	email := r.FormValue("email")
 
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	// if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
 
-	validation := validator.New()
-	err := validation.Struct(request)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	// validation := validator.New()
+	// err := validation.Struct(request)
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
 
-	user, err := h.UserRepository.GetUser(request.Email)
+	user, err := h.UserRepository.GetUser(email)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+			w.WriteHeader(http.StatusOK)
+			response := dto.ErrorResult{Code: http.StatusNotFound, Message: err.Error()}
 			json.NewEncoder(w).Encode(response)
 			return
 		}

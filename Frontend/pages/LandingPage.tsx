@@ -24,7 +24,7 @@ const LandingPage = () => {
     webClientId:
       "864096410384-9kj4i25qqqsr2vkhpkhg8m0qmurk9ah7.apps.googleusercontent.com",
   }
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(config)
+  const [request, response, promptAsync] = Google.useAuthRequest(config)
 
   const getLocalUser = async () => {
     try {
@@ -44,19 +44,59 @@ const LandingPage = () => {
       setAuthInProgress(true)
       const result = await promptAsync()
       if (result.type == "success") {
-        const { params } = result
-        axios.post("http://localhost:8000/api/v1/user", {
-          idToken: params?.id_token,
-        })
-        console.log("ini params", params)
+        const user = await getUserInfo(result?.authentication?.accessToken || "")
+        console.log(user);
+        
+        const email = user?.email
 
-        navigate.navigate("Profile" as never)
+        axios.get("http://localhost:8000/api/v1/user", {params: {email}})
+          .then((res) => {
+            if (res.data.code == 404) {
+              axios.post("http://localhost:8000/api/v1/createUser", user)
+              .then((res) => {
+                if (res.data.code == 200) {
+                  navigate.navigate("Profile" as never)
+                }
+              })
+            } else {
+              localStorage.setItem("user", JSON.stringify(res?.data?.data.token))
+              navigate.navigate("Start" as never)
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+    
+        
       }
     } else {
       console.log(user)
       console.log("loaded locally")
     }
   }
+
+  const getUserInfo = async (token: string) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const user = await response.json();
+
+      return user;
+
+      // await AsyncStorage.setItem("user", JSON.stringify(user));
+      // setAuthInProgress(false);
+    } catch (error) {
+      console.log("Error fetching user info:", error);
+      setAuthInProgress(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg1.png")} />
