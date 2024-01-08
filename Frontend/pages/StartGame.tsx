@@ -22,7 +22,11 @@ interface DataAvatar {
 
 const StartGame = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const toggleModal = () => {
+  const [coba, cobain] = useState(false);
+  const toggleModalDiamond = () => {
+    cobain(!coba);
+  };
+  const toggleProfileEdit = () => {
     setModalVisible(!isModalVisible);
   };
   const data: DataAvatar[] = [
@@ -43,7 +47,7 @@ const StartGame = () => {
           <Text style={styles.diamondText}>20</Text>
         </View>
 
-        <TouchableOpacity onPress={toggleModal}>
+        <TouchableOpacity onPress={toggleModalDiamond}>
           <Image
             style={styles.vectordiamond}
             source={require("../assets/adddiamondpng.png")}
@@ -60,30 +64,26 @@ const StartGame = () => {
           style={styles.avatar}
           source={require("../assets/avatar1.png")}
         />
-        <TouchableOpacity style={styles.edit} onPress={toggleModal}>
+        <TouchableOpacity style={styles.edit} onPress={toggleProfileEdit}>
           <FaEdit />
         </TouchableOpacity>
-        <Text style={styles.textup}>Select Your Avatar</Text>
+        <Text style={styles.textup}>Mazyk Breng</Text>
       </View>
-      {/* <TouchableOpacity
-              style={styles.closeButton}
-              onPress={toggleModal}
-            >
-              <FontAwesome name="times" size={24} color="black" />
-            </TouchableOpacity> */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.text}>Play Game</Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
+        visible={coba}
+        onRequestClose={toggleModalDiamond}
       >
         <View style={styles.modalContainer}>
-          {/* Modal content */}
           <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.modalButton} onPress={toggleModal}>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={toggleModalDiamond}
+            >
               <FontAwesome
                 style={styles.modalButtonText}
                 name="times"
@@ -92,15 +92,275 @@ const StartGame = () => {
                 width={100}
               />
             </TouchableOpacity>
-            <View style={styles.container1}>
-              <Image
-                source={{
-                  uri: "https://www.example.com/path/to/your/image.jpg",
-                }}
-                style={styles.image}
-              />
+
+            <View style={styles.grid1}>
+              <View style={styles.rowContainer}>
+                <View style={styles.rowContainer}>
+                  <Image
+                    style={{width: 55, height: 45, justifyContent: "center", alignItems: "center", left: 28, top: 30}}
+                    source={require("../assets/diamond1.png")}
+                  />
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 15,
+                      textAlign: "center",
+                      top: 35,
+                    }}
+                  >
+                    Free
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/avatar2.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  Free
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/avatar3.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  Free
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/Vip1.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  25{" "}
+                  <Image
+                    style={{ width: 15, height: 15, top: 2 }}
+                    source={require("../assets/diamond.png")}
+                  />
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/Vip2.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  25{" "}
+                  <Image
+                    style={{ width: 15, height: 15, top: 2 }}
+                    source={require("../assets/diamond.png")}
+                  />
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/Vip3.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  25{" "}
+                  <Image
+                    style={{ width: 15, height: 15, top: 2 }}
+                    source={require("../assets/diamond.png")}
+                  />
+                </Text>
+              </View>
             </View>
-            <Text style={styles.modalText}>dicoba dulu guys</Text>
+            <View>
+              <TouchableOpacity style={styles.buttondiamond}>
+                <Text style={styles.textdiamond}>Buy</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={toggleProfileEdit}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={toggleProfileEdit}
+            >
+              <FontAwesome
+                style={styles.modalButtonText}
+                name="times"
+                size={24}
+                color="black"
+                width={100}
+              />
+            </TouchableOpacity>
+
+            <View style={styles.grid1}>
+              <View style={styles.rowContainer}>
+                <View style={styles.rowContainer}>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/avatar1.png")}
+                  />
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 15,
+                      textAlign: "center",
+                      marginBottom: 5,
+                    }}
+                  >
+                    Free
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/avatar2.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  Free
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/avatar3.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  Free
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/Vip1.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  25{" "}
+                  <Image
+                    style={{ width: 15, height: 15, top: 2 }}
+                    source={require("../assets/diamond.png")}
+                  />
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/Vip2.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  25{" "}
+                  <Image
+                    style={{ width: 15, height: 15, top: 2 }}
+                    source={require("../assets/diamond.png")}
+                  />
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={styles.image}
+                  source={require("../assets/Vip3.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  25{" "}
+                  <Image
+                    style={{ width: 15, height: 15, top: 2 }}
+                    source={require("../assets/diamond.png")}
+                  />
+                </Text>
+              </View>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.buttondiamond}>
+                <Text style={styles.textdiamond}>Save</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -173,6 +433,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 10,
     color: "white",
+    textAlign: "center",
   },
   button: {
     backgroundColor: "#5ce1e6",
@@ -211,7 +472,7 @@ const styles = StyleSheet.create({
   },
   edit: {
     position: "absolute",
-    top: 60,
+    top: 125,
     right: -5,
     fontSize: 30,
     color: "white",
@@ -230,11 +491,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: "#7752FE",
     padding: 20,
     borderRadius: 10,
     elevation: 5,
-    height: 500,
+    height: 400,
     width: 400,
   },
   modalText: {
@@ -255,8 +516,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     fontSize: 26,
-    // marginTop: -20,
-    // marginLeft: 350,
   },
 
   container1: {
@@ -266,9 +525,41 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    width: 300,
-    height: 200,
-    resizeMode: "contain",
+    width: 90,
+    height: 90,
+    left: 10,
+    top: 2,
+  },
+  rowContainer: {
+    width: 110,
+    height: 110,
+    borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: "black",
+  },
+  grid1: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 0,
+    marginTop: 20,
+  },
+  buttondiamond: {
+    display: "flex",
+    backgroundColor: "#C2D9FF",
+    padding: 10,
+    borderRadius: 17,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textdiamond: {
+    color: "#0F1035",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 20,
+    alignItems: "center",
+    marginLeft: 10,
+    alignContent: "center",
   },
 });
-// modal edit end
