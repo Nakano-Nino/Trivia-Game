@@ -82,8 +82,6 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-
 	user := models.User{
 		Name:   request.Name,
 		Email:  request.Email,
@@ -98,8 +96,27 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	}
 
+	claims := jwt.MapClaims{}
+	claims["id"] = data.ID
+	claims["name"] = data.Name
+	claims["avatar"] = data.Avatar
+
+	token, errGenerateToken := jwtToken.GenerateToken(&claims)
+	if errGenerateToken != nil {
+		log.Println(errGenerateToken)
+		fmt.Println("Unauthorize")
+		return
+	}
+
+	Resp := usersdto.Resp{
+		Name:   user.Name,
+		Avatar: user.Avatar,
+		Role:   user.Role,
+		Token:  token,
+	}
+
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: ConvertResponse(data)}
+	response := dto.SuccessResult{Code: http.StatusOK, Data:Resp}
 	json.NewEncoder(w).Encode(response)
 }
 
