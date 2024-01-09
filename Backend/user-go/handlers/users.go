@@ -41,6 +41,7 @@ func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	claims := jwt.MapClaims{}
 	claims["id"] = user.ID
 	claims["name"] = user.Name
+	claims["email"] = user.Email
 	claims["avatar"] = user.Avatar
 
 	token, errGenerateToken := jwtToken.GenerateToken(&claims)
@@ -49,6 +50,8 @@ func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Unauthorize")
 		return
 	}
+
+	fmt.Println(token)
 
 	Resp := usersdto.Resp{
 		Name:   user.Name,
@@ -99,6 +102,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	claims := jwt.MapClaims{}
 	claims["id"] = data.ID
 	claims["name"] = data.Name
+	claims["email"] = data.Email
 	claims["avatar"] = data.Avatar
 
 	token, errGenerateToken := jwtToken.GenerateToken(&claims)
@@ -109,39 +113,25 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Resp := usersdto.Resp{
-		Name:   user.Name,
-		Avatar: user.Avatar,
-		Role:   user.Role,
+		Name:   data.Name,
+		Avatar: data.Avatar,
+		Role:   data.Role,
 		Token:  token,
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data:Resp}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: Resp}
 	json.NewEncoder(w).Encode(response)
 }
 
 func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(usersdto.UpdateUserRequest)
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	validation := validator.New()
-	err := validation.Struct(request)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	var name = r.FormValue("name")
+	var avatar = r.FormValue("avatar")
 
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	email := userInfo["email"].(string) 
+	email := userInfo["email"].(string)
 
 	user, err := h.UserRepository.GetUser(email)
 	if err != nil {
@@ -151,10 +141,8 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	avatar := "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/"+request.Avatar
-
-	if request.Name != "" {
-		user.Name = request.Name
+	if name != "" {
+		user.Name = name
 	}
 
 	user.Avatar = avatar
@@ -167,8 +155,25 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userInfo["name"] = data.Name
+	userInfo["avatar"] = data.Avatar
+
+	token, errGenerateToken := jwtToken.GenerateToken(&userInfo)
+	if errGenerateToken != nil {
+		log.Println(errGenerateToken)
+		fmt.Println("Unauthorize")
+		return
+	}
+
+	Resp := usersdto.Resp{
+		Name:   data.Name,
+		Avatar: data.Avatar,
+		Role:   data.Role,
+		Token:  token,
+	}
+
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: ConvertResponse(data)}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: Resp}
 	json.NewEncoder(w).Encode(response)
 	return
 }

@@ -3,10 +3,11 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	dto "github.com/Nakano-Nino/Trivia-Game/dto/result"
-	jwtoken "github.com/Nakano-Nino/Trivia-Game/pkg/jwt"
 	"net/http"
 	"strings"
+
+	dto "github.com/Nakano-Nino/Trivia-Game/dto/result"
+	jwtoken "github.com/Nakano-Nino/Trivia-Game/pkg/jwt"
 )
 
 type Result struct {
@@ -40,6 +41,7 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 
 		ctx := context.WithValue(r.Context(), "userInfo", claims)
 		r = r.WithContext(ctx)
-		next.ServeHTTP(w, r.WithContext(ctx))	
+
+		next.ServeHTTP(w, r)
 	})
 }
