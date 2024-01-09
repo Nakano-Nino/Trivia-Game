@@ -43,29 +43,40 @@ const LandingPage = () => {
       setAuthInProgress(true)
       const result = await promptAsync()
       if (result.type == "success") {
-        const user = await getUserInfo(result?.authentication?.accessToken || "")
-        
+        const user = await getUserInfo(
+          result?.authentication?.accessToken || ""
+        )
+
         const email = user?.email
 
-        axios.get("http://localhost:8000/api/v1/user", {params: {email}})
+        axios
+          .get("http://localhost:8000/api/v1/user", { params: { email } })
           .then((res) => {
+            console.log(res)
             if (res.data.code == 404) {
-              axios.post("http://localhost:8000/api/v1/createUser", user)
-              .then((res) => {
-                if (res.data.code == 200) {
-                  navigate.navigate("Profile" as never)
-                }
-              })
+              axios
+                .post("http://localhost:8000/api/v1/createUser", user)
+                .then((res: any) => {
+                  console.log("ini res", res)
+                  if (res.data.code == 200) {
+                    localStorage.setItem(
+                      "user",
+                      JSON.stringify(res?.data?.data.token)
+                    )
+                    navigate.navigate("Profile" as never)
+                  }
+                })
             } else {
-              localStorage.setItem("user", JSON.stringify(res?.data?.data.token))
+              localStorage.setItem(
+                "user",
+                JSON.stringify(res?.data?.data.token)
+              )
               navigate.navigate("Start" as never)
             }
           })
           .catch((err) => {
             console.log(err)
           })
-    
-        
       }
     } else {
       console.log(user)
@@ -75,26 +86,26 @@ const LandingPage = () => {
   }
 
   const getUserInfo = async (token: string) => {
-    if (!token) return;
+    if (!token) return
     try {
       const response = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      );
+      )
 
-      const user = await response.json();
+      const user = await response.json()
 
-      return user;
+      return user
 
       // await AsyncStorage.setItem("user", JSON.stringify(user));
       // setAuthInProgress(false);
     } catch (error) {
-      console.log("Error fetching user info:", error);
-      setAuthInProgress(false);
+      console.log("Error fetching user info:", error)
+      setAuthInProgress(false)
     }
-  };
+  }
 
   return (
     <View style={styles.container}>

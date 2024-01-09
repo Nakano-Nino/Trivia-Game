@@ -76,7 +76,10 @@ const Profile = () => {
         {data.map((item) => (
           <TouchableOpacity
             key={item.id}
-            onPress={() => setSelectedAvatar(item)}
+            onPress={() => {
+              setSelectedAvatar(item)
+              console.log("Selected Avatar:", item)
+            }}
           >
             <Image style={styles.avatar} source={{ uri: item.imageUrl }} />
           </TouchableOpacity>
