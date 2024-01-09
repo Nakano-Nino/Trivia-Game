@@ -11,9 +11,8 @@ import axios from "axios"
 
 WebBrowser.maybeCompleteAuthSession()
 interface UserInfo {
-  picture?: string
+  avatar?: string
   email: string
-  verified_email: boolean
   name: string
 }
 
@@ -45,7 +44,6 @@ const LandingPage = () => {
       const result = await promptAsync()
       if (result.type == "success") {
         const user = await getUserInfo(result?.authentication?.accessToken || "")
-        console.log(user);
         
         const email = user?.email
 
@@ -72,6 +70,7 @@ const LandingPage = () => {
     } else {
       console.log(user)
       console.log("loaded locally")
+      navigate.navigate("Start" as never)
     }
   }
 

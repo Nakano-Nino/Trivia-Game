@@ -11,6 +11,7 @@ import (
 type UserRepository interface {
 	GetUser(Email string) (models.User, error)
 	CreateUser(user models.User) (models.User, error)
+	UpdateUser(user models.User) (models.User, error)
 }
 
 type repository struct {
@@ -33,5 +34,11 @@ func (r *repository) CreateUser(user models.User) (models.User, error) {
 	if err != nil {
 		log.Fatal("failed to create user: ", err)
 	}
+	return user, err
+}
+
+func (r *repository) UpdateUser(user models.User) (models.User, error) {
+	err := r.db.Debug().Save(&user).Error
+
 	return user, err
 }

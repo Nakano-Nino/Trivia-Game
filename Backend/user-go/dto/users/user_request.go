@@ -8,6 +8,11 @@ type CreateUserRequest struct {
 	Role   string `json:"role" form:"role"`
 }
 
+type UpdateUserRequest struct {
+	Name   string `json:"name" form:"name" validate:"required"`
+	Avatar string `json:"picture" form:"avatar" validate:"required"`
+}
+
 type GetUserRequest struct {
 	Email string `json:"email" form:"email" validate:"required"`
 }
