@@ -56,7 +56,13 @@ const LandingPage = () => {
               axios
                 .post("http://localhost:8000/api/v1/createUser", user)
                 .then((res) => {
+                  console.log(res)
+
                   if (res.data.code == 200) {
+                    localStorage.setItem(
+                      "user",
+                      JSON.stringify(res?.data?.data.token)
+                    )
                     navigate.navigate("Profile" as never)
                   }
                 })
@@ -65,7 +71,7 @@ const LandingPage = () => {
                 "user",
                 JSON.stringify(res?.data?.data.token)
               )
-              navigate.navigate("Start" as never)
+              navigate.navigate("StartGame" as never)
             }
           })
           .catch((err) => {

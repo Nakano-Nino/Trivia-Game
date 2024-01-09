@@ -7,7 +7,7 @@ import LandingPage from "./pages/LandingPage"
 import "react-native-gesture-handler"
 import Profile from "./pages/Profile"
 import SplashScreen from "./pages/SplashScreen"
-import StartGame from "./pages/Start"
+import StartGame from "./pages/StartGame"
 
 const Stack = createStackNavigator()
 const App = () => {
@@ -31,7 +31,7 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Start"
+            name="StartGame"
             component={StartGame}
             options={{ headerShown: false }}
           />
