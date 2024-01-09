@@ -17,6 +17,10 @@ import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNavigation } from "@react-navigation/native"
 
+import { MaterialIcons } from "@expo/vector-icons"
+import Avatar from "../components/Avatar"
+import { FaEdit } from "react-icons/fa"
+
 interface DataAvatar {
   id: string
   name: string
@@ -176,8 +180,9 @@ const Profile = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <View style={{ flex: 1, marginTop: -200 }}>
+      <View style={{ flex: 1, marginTop: 50 }}>
         <View style={styles.inputContainer}>
+          <FaEdit style={styles.editIcon} />
           <TextInput
             style={styles.input}
             placeholder="Your Name"
@@ -214,6 +219,49 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginRight: 20,
   },
+
+  scrollView: {
+    marginBottom: 150,
+  },
+
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 5,
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginTop: 2,
+  },
+  textup: {
+    fontSize: 20,
+    marginBottom: 10,
+    color: "white",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: "transparent",
+    marginBottom: 20,
+    borderRadius: 5,
+    backgroundColor: "white",
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    height: 40,
+    padding: 10,
+  },
+  editIcon: {
+    marginLeft: 10,
+    marginRight: 5,
+    color: "black",
+  },
   button: {
     backgroundColor: "#5ce1e6",
     padding: 10,
@@ -235,41 +283,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 10,
     alignContent: "center",
-  },
-  input: {
-    backgroundColor: "white",
-    padding: 10,
-    width: 300,
-    height: 50,
-    borderRadius: 17,
-    marginTop: 250,
-    color: "black",
-    fontSize: 18,
-  },
-  scrollView: {
-    marginBottom: 150,
-  },
-  inputContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 5,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 2,
-  },
-  textup: {
-    fontSize: 20,
-    marginBottom: 10,
-    color: "white",
   },
 })

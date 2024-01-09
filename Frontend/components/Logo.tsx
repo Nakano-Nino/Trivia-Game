@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Image, StyleSheet, View } from "react-native"
-
+import React from "react"
 const Logo = () => {
   return (
     <View style={styles.container}>
