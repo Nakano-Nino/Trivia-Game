@@ -6,36 +6,34 @@ import {
   Text,
   TouchableOpacity,
   Modal,
-} from "react-native";
-import Avatar from "../components/Avatar";
-import { StatusBar } from "expo-status-bar";
-import { FaEdit } from "react-icons/fa";
-import { IoDiamond } from "react-icons/io5";
-import React, { useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
+} from "react-native"
+import Avatar from "../components/Avatar"
+import { StatusBar } from "expo-status-bar"
+import { FaEdit } from "react-icons/fa"
+import { IoDiamond } from "react-icons/io5"
+import React, { useState } from "react"
+import { FontAwesome } from "@expo/vector-icons"
+import { jwtDecode } from "jwt-decode"
 
-interface DataAvatar {
-  id: string;
-  name: string;
-  imageUrl: string;
+interface DecodedToken {
+  avatar: string
+  name: string
 }
-
 const StartGame = () => {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [coba, cobain] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false)
+  const token = localStorage.getItem("user") + ""
+  const { avatar, name } = jwtDecode<DecodedToken>(token)
+  const [coba, cobain] = useState(false)
   const toggleModalDiamond = () => {
-    cobain(!coba);
-  };
+    cobain(!coba)
+  }
   const toggleProfileEdit = () => {
-    setModalVisible(!isModalVisible);
-  };
-  const data: DataAvatar[] = [
-    { id: "1", name: "John", imageUrl: "../assets/avatar1.png" },
-  ];
+    setModalVisible(!isModalVisible)
+  }
 
-  const renderAvatar = ({ item }: { item: DataAvatar }) => (
-    <Avatar imageUrl={item.imageUrl} name={item.name} />
-  );
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible)
+  }
 
   return (
     <View style={styles.container}>
@@ -59,11 +57,9 @@ const StartGame = () => {
           source={require("../assets/diamond.png")}
         />
       </View>
+      <Text>Hello, {name}</Text>
       <View>
-        <Image
-          style={styles.avatar}
-          source={require("../assets/avatar1.png")}
-        />
+        <Image style={styles.avatar} source={{ uri: avatar || "" }} />
         <TouchableOpacity style={styles.edit} onPress={toggleProfileEdit}>
           <FaEdit />
         </TouchableOpacity>
@@ -116,7 +112,6 @@ const StartGame = () => {
                   }}
                 >
                   Rp. 20.000{" "}
-                  
                 </Text>
                 {/* </View> */}
               </View>
@@ -182,7 +177,6 @@ const StartGame = () => {
                   }}
                 >
                   Rp. 135.000{" "}
-                  
                 </Text>
               </View>
               <View style={styles.rowContainer}>
@@ -201,7 +195,6 @@ const StartGame = () => {
                   }}
                 >
                   Rp. 250.000{" "}
-                  
                 </Text>
               </View>
               <View style={styles.rowContainer}>
@@ -220,7 +213,6 @@ const StartGame = () => {
                   }}
                 >
                   Rp. 516.000{" "}
-                  
                 </Text>
               </View>
             </View>
@@ -380,10 +372,10 @@ const StartGame = () => {
       </Modal>
       <Image style={styles.artist} source={require("../assets/artist.png")} />
     </View>
-  );
-};
+  )
+}
 
-export default StartGame;
+export default StartGame
 
 const styles = StyleSheet.create({
   container: {
@@ -577,4 +569,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignContent: "center",
   },
-});
+})
