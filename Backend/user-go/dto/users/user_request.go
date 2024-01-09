@@ -9,8 +9,8 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-	Name   string `json:"name" form:"name" validate:"required"`
-	Avatar string `json:"picture" form:"avatar" validate:"required"`
+	Name   string `json:"name" form:"name"`
+	Avatar string `json:"picture" form:"avatar"`
 }
 
 type GetUserRequest struct {
