@@ -95,118 +95,132 @@ const StartGame = () => {
 
             <View style={styles.grid1}>
               <View style={styles.rowContainer}>
-                <View style={styles.rowContainer}>
-                  <Image
-                    style={{width: 55, height: 45, justifyContent: "center", alignItems: "center", left: 28, top: 30}}
-                    source={require("../assets/diamond1.png")}
-                  />
-                  <Text
-                    style={{
-                      color: "white",
-                      fontSize: 15,
-                      textAlign: "center",
-                      top: 35,
-                    }}
-                  >
-                    Free
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.rowContainer}>
+                {/* <View style={styles.rowContainer}> */}
                 <Image
-                  style={styles.image}
-                  source={require("../assets/avatar2.png")}
+                  style={{
+                    width: 60,
+                    height: 50,
+                    left: 25,
+                    top: 30,
+                  }}
+                  source={require("../assets/Diamond1.png")}
                 />
                 <Text
                   style={{
                     color: "white",
-                    fontWeight: "bold",
                     fontSize: 15,
-                    textAlign: "center",
-                    marginBottom: 5,
+                    top: 90,
+                    left: 15,
+                    fontWeight: "bold",
+                    position: "absolute",
                   }}
                 >
-                  Free
+                  Rp. 20.000{" "}
+                  
+                </Text>
+                {/* </View> */}
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={{
+                    width: 80,
+                    height: 45,
+                    left: 20,
+                    top: 35,
+                  }}
+                  source={require("../assets/Diamond2.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 15,
+                    top: 90,
+                    left: 15,
+                    fontWeight: "bold",
+                    position: "absolute",
+                  }}
+                >
+                  Rp. 36.000
+                </Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Image
+                  style={{
+                    width: 75,
+                    height: 55,
+                    left: 20,
+                    top: 30,
+                  }}
+                  source={require("../assets/Diamond3.png")}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 15,
+                    top: 90,
+                    left: 15,
+                    fontWeight: "bold",
+                    position: "absolute",
+                  }}
+                >
+                  Rp. 69.000
                 </Text>
               </View>
               <View style={styles.rowContainer}>
                 <Image
                   style={styles.image}
-                  source={require("../assets/avatar3.png")}
+                  source={require("../assets/Diamond4.png")}
                 />
                 <Text
                   style={{
                     color: "white",
-                    fontWeight: "bold",
                     fontSize: 15,
-                    textAlign: "center",
-                    marginBottom: 5,
+                    top: 90,
+                    left: 15,
+                    fontWeight: "bold",
+                    position: "absolute",
                   }}
                 >
-                  Free
+                  Rp. 135.000{" "}
+                  
                 </Text>
               </View>
               <View style={styles.rowContainer}>
                 <Image
                   style={styles.image}
-                  source={require("../assets/Vip1.png")}
+                  source={require("../assets/Diamond5.png")}
                 />
                 <Text
                   style={{
                     color: "white",
-                    fontWeight: "bold",
                     fontSize: 15,
-                    textAlign: "center",
-                    marginBottom: 5,
+                    top: 90,
+                    left: 15,
+                    fontWeight: "bold",
+                    position: "absolute",
                   }}
                 >
-                  25{" "}
-                  <Image
-                    style={{ width: 15, height: 15, top: 2 }}
-                    source={require("../assets/diamond.png")}
-                  />
+                  Rp. 250.000{" "}
+                  
                 </Text>
               </View>
               <View style={styles.rowContainer}>
                 <Image
                   style={styles.image}
-                  source={require("../assets/Vip2.png")}
+                  source={require("../assets/Diamond6.png")}
                 />
                 <Text
                   style={{
                     color: "white",
-                    fontWeight: "bold",
                     fontSize: 15,
-                    textAlign: "center",
-                    marginBottom: 5,
+                    top: 90,
+                    left: 15,
+                    fontWeight: "bold",
+                    position: "absolute",
                   }}
                 >
-                  25{" "}
-                  <Image
-                    style={{ width: 15, height: 15, top: 2 }}
-                    source={require("../assets/diamond.png")}
-                  />
-                </Text>
-              </View>
-              <View style={styles.rowContainer}>
-                <Image
-                  style={styles.image}
-                  source={require("../assets/Vip3.png")}
-                />
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    fontSize: 15,
-                    textAlign: "center",
-                    marginBottom: 5,
-                  }}
-                >
-                  25{" "}
-                  <Image
-                    style={{ width: 15, height: 15, top: 2 }}
-                    source={require("../assets/diamond.png")}
-                  />
+                  Rp. 516.000{" "}
+                  
                 </Text>
               </View>
             </View>
@@ -491,7 +505,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "#7752FE",
+    backgroundColor: "black",
     padding: 20,
     borderRadius: 10,
     elevation: 5,
@@ -500,6 +514,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 18,
+
     marginBottom: 20,
   },
   modalButton: {
@@ -546,7 +561,7 @@ const styles = StyleSheet.create({
   },
   buttondiamond: {
     display: "flex",
-    backgroundColor: "#C2D9FF",
+    backgroundColor: "#5ce1e6",
     padding: 10,
     borderRadius: 17,
     marginTop: 20,

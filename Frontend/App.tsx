@@ -8,6 +8,7 @@ import "react-native-gesture-handler";
 import Profile from "./pages/Profile";
 import SplashScreen from "./pages/SplashScreen";
 import StartGame from "./pages/StartGame";
+// import ModalDiamond from "./components/ModalDiamond";
 
 const Stack = createStackNavigator();
 const App = () => {
@@ -35,6 +36,11 @@ const App = () => {
             component={StartGame}
             options={{ headerShown: false }}
           />
+          {/* <Stack.Screen
+            name="ModalDiamond"
+            component={ModalDiamond}
+            options={{ headerShown: false }}
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </>
