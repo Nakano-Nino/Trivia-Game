@@ -1,5 +1,5 @@
-import React from "react"
-import { StatusBar } from "expo-status-bar"
+import React from "react";
+import { StatusBar } from "expo-status-bar";
 import {
   Image,
   Pressable,
@@ -7,19 +7,20 @@ import {
   Text,
   TextInput,
   View,
-} from "react-native"
+} from "react-native";
 import {
   FlatList,
   ScrollView,
   TouchableOpacity,
-} from "react-native-gesture-handler"
-import { MaterialIcons } from "@expo/vector-icons"
-import Avatar from "../components/Avatar"
+} from "react-native-gesture-handler";
+import { MaterialIcons } from "@expo/vector-icons";
+import Avatar from "../components/Avatar";
+import { FaEdit } from "react-icons/fa";
 
 interface DataAvatar {
-  id: string
-  name: string
-  imageUrl: string
+  id: string;
+  name: string;
+  imageUrl: string;
 }
 const Profile = () => {
   const data: DataAvatar[] = [
@@ -35,11 +36,11 @@ const Profile = () => {
     { id: "10", name: "Olivia", imageUrl: "../assets/avatar10.png" },
     { id: "11", name: "Daniel", imageUrl: "../assets/avatar11.png" },
     { id: "12", name: "Emma", imageUrl: "../assets/avatar12.png" },
-  ]
+  ];
 
   const renderAvatar = ({ item }: { item: DataAvatar }) => (
     <Avatar imageUrl={item.imageUrl} name={item.name} />
-  )
+  );
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -121,28 +122,23 @@ const Profile = () => {
           />
         </TouchableOpacity>
       </View>
-      <View style={{ flex: 1, marginTop: -200 }}>
+      <View style={{ flex: 1, marginTop: 50 }}>
         <View style={styles.inputContainer}>
+          <FaEdit style={styles.editIcon} />
           <TextInput
             style={styles.input}
             placeholder="Your Name"
             placeholderTextColor="gray"
           />
-          {/* <MaterialIcons
-            name="drive-file-rename-outline"
-            size={30}
-            color="black"
-            style={styles.icon}
-          /> */}
         </View>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.text}>Continue</Text>
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
-export default Profile
+  );
+};
+export default Profile;
 
 const styles = StyleSheet.create({
   container: {
@@ -162,6 +158,49 @@ const styles = StyleSheet.create({
     position: "relative",
     marginTop: 5,
     marginRight: 20,
+  },
+
+  scrollView: {
+    marginBottom: 150,
+  },
+
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 5,
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginTop: 2,
+  },
+  textup: {
+    fontSize: 20,
+    marginBottom: 10,
+    color: "white",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: "transparent",
+    marginBottom: 20,
+    borderRadius: 5,
+    backgroundColor: "white",
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    height: 40,
+    padding: 10,
+  },
+  editIcon: {
+    marginLeft: 10,
+    marginRight: 5,
+    color: "black",
   },
   button: {
     backgroundColor: "#5ce1e6",
@@ -185,40 +224,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignContent: "center",
   },
-  input: {
-    backgroundColor: "white",
-    padding: 10,
-    width: 300,
-    height: 50,
-    borderRadius: 17,
-    marginTop: 250,
-    color: "black",
-    fontSize: 18,
-  },
-  scrollView: {
-    marginBottom: 150,
-  },
-  inputContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 5,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 2,
-  },
-  textup: {
-    fontSize: 20,
-    marginBottom: 10,
-    color: "white",
-  },
-})
+});
