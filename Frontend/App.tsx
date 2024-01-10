@@ -14,7 +14,7 @@ const App = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="StartGame">
+        <Stack.Navigator initialRouteName="LandingPage">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -35,7 +35,6 @@ const App = () => {
             component={StartGame}
             options={{ headerShown: false }}
           />
-
         </Stack.Navigator>
       </NavigationContainer>
     </>
