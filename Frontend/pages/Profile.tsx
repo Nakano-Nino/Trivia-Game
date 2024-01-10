@@ -30,7 +30,7 @@ const Profile = () => {
     { id: "4", name: "Alice", imageUrl: "../assets/avatar4.png" },
     { id: "5", name: "Mike", imageUrl: "../assets/avatar5.png" },
     { id: "6", name: "Emily", imageUrl: "../assets/avatar6.png" },
-    { id: "7", name: "David", imageUrl: "../assets/avatar7.png" },
+    { id: "7", name: "David", imageUrl: "../assets/a  vatar7.png" },
     { id: "8", name: "Sarah", imageUrl: "../assets/avatar8.png" },
     { id: "9", name: "Michael", imageUrl: "../assets/avatar9.png" },
     { id: "10", name: "Olivia", imageUrl: "../assets/avatar10.png" },
