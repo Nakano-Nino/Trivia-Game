@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::resource('User', 'UsersController');
+Route::resource('Question', 'QuestionsController');
+Route::resource('Answer', 'AnswersController');
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
