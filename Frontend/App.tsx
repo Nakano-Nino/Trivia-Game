@@ -35,11 +35,7 @@ const App = () => {
             component={StartGame}
             options={{ headerShown: false }}
           />
-          {/* <Stack.Screen
-            name="ModalDiamond"
-            component={ModalDiamond}
-            options={{ headerShown: false }}
-          /> */}
+
         </Stack.Navigator>
       </NavigationContainer>
     </>
