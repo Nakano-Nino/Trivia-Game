@@ -91,8 +91,18 @@ const StartGame = () => {
 
             <View style={styles.grid1}>
               <View style={styles.rowContainer}>
+ 
+                <Text style={styles.listDiamond}>100</Text>
+                <TouchableOpacity>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/Diamond1.png")}
+                  />
+                  <Text style={styles.PriceDiamond}>Rp. 16.000 </Text>
+                </TouchableOpacity>
+ 
                 {/* <View style={styles.rowContainer}> */}
-                <Image
+        {/*<Image
                   style={{
                     width: 60,
                     height: 50,
@@ -113,56 +123,61 @@ const StartGame = () => {
                 >
                   Rp. 20.000{" "}
                 </Text>
+                */}
                 {/* </View> */}
+ 
               </View>
               <View style={styles.rowContainer}>
-                <Image
-                  style={{
-                    width: 80,
-                    height: 45,
-                    left: 20,
-                    top: 35,
-                  }}
-                  source={require("../assets/Diamond2.png")}
-                />
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 15,
-                    top: 90,
-                    left: 15,
-                    fontWeight: "bold",
-                    position: "absolute",
-                  }}
-                >
-                  Rp. 36.000
-                </Text>
+                <Text style={styles.listDiamond}>250</Text>
+                <TouchableOpacity>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/Diamond2.png")}
+                  />
+                  <Text style={styles.PriceDiamond}>Rp. 13.000 </Text>
+                </TouchableOpacity>
               </View>
               <View style={styles.rowContainer}>
-                <Image
-                  style={{
-                    width: 75,
-                    height: 55,
-                    left: 20,
-                    top: 30,
-                  }}
-                  source={require("../assets/Diamond3.png")}
-                />
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 15,
-                    top: 90,
-                    left: 15,
-                    fontWeight: "bold",
-                    position: "absolute",
-                  }}
-                >
-                  Rp. 69.000
-                </Text>
+                <Text style={styles.listDiamond}>500</Text>
+                <TouchableOpacity>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/Diamond3.png")}
+                  />
+                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
+                </TouchableOpacity>
               </View>
               <View style={styles.rowContainer}>
-                <Image
+                <Text style={styles.listDiamond}>1000</Text>
+                <TouchableOpacity>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/Diamond4.png")}
+                  />
+                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.rowContainer}>
+                <Text style={styles.listDiamond}>5000</Text>
+                <TouchableOpacity>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/Diamond5.png")}
+                  />
+                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.rowContainer}>
+                <Text style={styles.listDiamond}>10000</Text>
+                <TouchableOpacity>
+                  <Image
+                    style={styles.image}
+                    source={require("../assets/Diamond6.png")}
+                  />
+                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
+                </TouchableOpacity>
+
+<!--                 <Image
                   style={styles.image}
                   source={require("../assets/Diamond4.png")}
                 />
@@ -213,7 +228,8 @@ const StartGame = () => {
                   }}
                 >
                   Rp. 516.000{" "}
-                </Text>
+                </Text> -->
+
               </View>
             </View>
             <View>
@@ -501,7 +517,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     elevation: 5,
-    height: 400,
+    height: 480,
     width: 400,
   },
   modalText: {
@@ -531,17 +547,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  listDiamond: {
+    color: "white",
+    fontSize: 15,
+    // top: -10,
+    // left: 15,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
   image: {
     width: 90,
     height: 90,
     left: 10,
     top: 2,
   },
+  PriceDiamond: {
+    color: "white",
+    fontSize: 15,
+    top: 95,
+    // textAlign: "center",
+    left: 11,
+    fontWeight: "bold",
+    position: "absolute",
+  },
   rowContainer: {
     width: 110,
     height: 110,
     borderRadius: 5,
-    marginBottom: 10,
+    marginBottom: 60,
     backgroundColor: "black",
   },
   grid1: {
@@ -553,10 +586,10 @@ const styles = StyleSheet.create({
   },
   buttondiamond: {
     display: "flex",
-    backgroundColor: "#5ce1e6",
+    backgroundColor: "#864AF9",
     padding: 10,
     borderRadius: 17,
-    marginTop: 20,
+    marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
   },
