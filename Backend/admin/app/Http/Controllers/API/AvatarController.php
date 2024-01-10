@@ -41,12 +41,13 @@ class AvatarController extends Controller
 
             try {
                 $image = $request->file('avatar');
-                $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName());
+                $folderPath = 'Trivia/Avatar';
+                $tags = 'Trivia, CelebMinds, Avatar';
+                $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName(), $folderPath, $tags);
 
             } catch (CloudinaryException $e) {
                 return response()->json([
-                    'message' => $e->getMessage(),
-                    'error' => 'error cludinary',
+                    'message' => $e->getMessage()
                 ], 500);
             }
 
@@ -70,27 +71,35 @@ class AvatarController extends Controller
     {
         try {
             $avatar = Avatar::where('id', $request->id)->first();
-            if (!$avatar) {
+            if ($avatar) {
+                
+                if ($request->hasFile('avatar')) {
+                    $image = $request->file('avatar');
+                    $imageStored = $avatar->avatar;
+                    CloudinaryStorage::delete($imageStored);
+
+                    $folderPath = 'Trivia/Avatar';
+                    $tags = 'Trivia, CelebMinds, Avatar';
+                    $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName(), $folderPath, $tags);
+                    $avatar->update([
+                        'avatar' => $response,
+                        'price' => $request->price ?? $avatar->price,
+                    ]);
+                } else {
+                    $avatar->update([
+                        'price' => $request->price,
+                    ]);
+                }
+                    
+                return response()->json([
+                    'message' => 'Avatar updated successfully',
+                    'avatar' => $avatar
+                ], 200);
+            } else {
                 return response()->json([
                     'message' => 'Avatar not found',
                 ], 404);
             }
-            $validatedData = $request->validate([
-                'avatar' => 'required|image',
-                'price' => 'required|string',
-            ]);
-            
-            $image = $request->file('avatar');
-            $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName());
-            $avatar->update([
-                'avatar' => $response,
-                'price' => $request->price,
-            ]);
-                
-            return response()->json([
-                'message' => 'Avatar updated successfully',
-                'avatar' => $avatar
-            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'something went wrong',
@@ -99,12 +108,13 @@ class AvatarController extends Controller
         }
     }
 
-    public function delete(Request $request, Avatar $avatar)
+    public function delete(Request $request)
     {
         try {
             $avatar = Avatar::where('id', $request->id)->first();
             if ($avatar) {
-                Cloudinary::destroy($avatar->avatar);
+                $image = $avatar->avatar;
+                CloudinaryStorage::delete($image);
                 $avatar->delete();
                 return response()->json([
                     'message' => 'Avatar deleted successfully',

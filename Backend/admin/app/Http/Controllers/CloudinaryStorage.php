@@ -6,27 +6,22 @@ use Illuminate\Http\Request;
 
 class CloudinaryStorage extends Controller
 {
-    private const folder_path = 'Trivia/Avatar';
+    // private const folder_path = 'Trivia/Avatar';
 
     public static function path($path){
         return pathinfo($path, PATHINFO_FILENAME);
     }
 
-    public static function upload($image, $filename){
+    public static function upload($image, $filename, $folderPath, $tags){
         $newFilename = str_replace(' ', '_', $filename);
         $public_id = date('Y-m-d_His').'_'.$newFilename;
         $result = cloudinary()->upload($image, [
             "public_id" => self::path($public_id),
-            "folder"    => self::folder_path,
-            "tags"      => 'Trivia, CelebMinds'
+            "folder"    => $folderPath,
+            "tags"      => $tags
         ])->getSecurePath();
 
         return $result;
-    }
-
-    public static function destroy($image, $filename){
-        $public_id = date('Y-m-d_His').'_'.$filename;
-        return cloudinary()->destroy($public_id);
     }
 
     public static function replace($path, $image, $public_id){

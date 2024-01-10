@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create("avatars", function (Blueprint $table){
             $table->uuid("id")->primary();
             $table->string("avatar");
-            $table->string("price");
+            $table->integer("price");
             $table->timestamps();
         });
 

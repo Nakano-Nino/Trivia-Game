@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\CloudinaryStorage;
 use Illuminate\Http\Request;
 use App\Models\Questions;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +11,12 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class QuestionController extends Controller
 {
-    public function questionFindAll()
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    public function findAll()
     {
         try {
             $questions = Questions::all();
@@ -23,7 +29,7 @@ class QuestionController extends Controller
         }
     }
 
-    public function questionFindOne(Request $request)
+    public function findOne(Request $request)
     {
         try {
             $questions = Questions::where('id', $request->id)->first();
@@ -42,41 +48,41 @@ class QuestionController extends Controller
         }
     }
 
-    public function questionCreate(Request $request)
+    public function create(Request $request)
     {
         try {
             $validatedData = $request->validate([
                 'image_question' => 'required|image',
-                'answers.*.answer' => 'required',
-                'answers.*.is_correct' => 'required|boolean',
+                'A' => 'required',
+                'B' => 'required',
+                'C' => 'required',
+                'D' => 'required',
+                'answer' => 'required',
             ]);
 
             try {
-                $response = Cloudinary::upload($request->file('image_question'), [
-                    'folder' => 'CelebMinds/Question',
-                    'tags' => ['question', 'CelebMinds']
-                ]);
-                $imageUrl = $response->getSecurePath();
+                $image = $request->file('image_question');
+                $folderPath = 'Trivia/Question';
+                $tags = 'Trivia, CelebMinds, Question';
+                $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName(), $folderPath, $tags);
             } catch (CloudinaryException $e) {
-                return $e->getMessage();
+                return response()->json([
+                    'message' => $e->getMessage()
+                ], 500);
             }
 
-            $question = Question::create([
-                'question' => $request->question,
-                'image_question' => $imageUrl,
+            $question = Questions::create([
+                'image_question' => $response,
+                'A' => $request->A,
+                'B' => $request->B,
+                'C' => $request->C,
+                'D' => $request->D,
+                'answer' => $request->answer,
             ]);
-
-            foreach ($request->answers as $answerData) {
-                Answer::create([
-                    'question_id' => $question->id,
-                    'answer' => $answerData['answer'],
-                    'is_correct' => $answerData['is_correct'],
-                ]);
-            }
 
             return response()->json([
                 'message' => 'question created successfully',
-                'data' => $questions
+                'data' => $question
             ], 201);
         } catch (\Throwable $th) {
             return response()->json([
@@ -86,40 +92,46 @@ class QuestionController extends Controller
         }
     }
 
-    public function questionUpdate(Request $request, Questions $questions)
+    public function update(Request $request, Questions $questions)
     {
         try {
             $questions = Questions::where('id', $request->id)->first();
             if ($questions) {
                 $validatedData = $request->validate([
-                    'answers.*.answer' => 'required',
-                    'answers.*.is_correct' => 'required|boolean',
+                    'A' => 'required',
+                    'B' => 'required',
+                    'C' => 'required',
+                    'D' => 'required',
+                    'answer' => 'required',
                 ]);
                 
                 if ($request->hasFile('image_question')) {
-                    try {
-                        Cloudinary::destroy($questions->image_question);
-                        $response = Cloudinary::upload($request->file('image_question'), [
-                            'folder' => 'CelebMinds/Question',
-                            'tags' => ['question', 'CelebMinds']
-                        ]);
-                        $imageUrl = $response->getSecurePath();
-                    } catch (CloudinaryException $e) {
-                        return $e->getMessage();
-                    }
-                } else {
-                    $questions->update(['question' => $request->questions]);
-                }
+                    $image = $request->file('image_question');
+                    $imageStored = $questions->image_question;
 
-                $questions->answers()->delete();
-                
-                foreach ($request->answers as $answerData) {
-                    Answer::create([
-                        'question_id' => $questions->id,
-                        'answer' => $answerData['answer'],
-                        'is_correct' => $answerData['is_correct'],
+                    CloudinaryStorage::delete($imageStored);
+
+                    $folderPath = 'Trivia/Question';
+                    $tags = 'Trivia, CelebMinds, Question';
+                    $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName(), $folderPath, $tags);
+                    $questions->update([
+                        'image_question' => $response,
+                        'A' => $request->A,
+                        'B' => $request->B,
+                        'C' => $request->C,
+                        'D' => $request->D,
+                        'answer' => $request->answer,
+                    ]);
+                } else {
+                    $questions->update([
+                        'A' => $request->A,
+                        'B' => $request->B,
+                        'C' => $request->C,
+                        'D' => $request->D,
+                        'answer' => $request->answer,
                     ]);
                 }
+
                 return response()->json([
                     'message' => 'question updated successfully',
                     'data' => $questions
@@ -133,17 +145,17 @@ class QuestionController extends Controller
         }
     }
 
-    public function questionDelete(Request $request)
+    public function delete(Request $request)
     {
         try {
             $question = Questions::where('id', $request->id)->first();
             if ($question) {
-                Cloudinary::destroy($question->image_question);
-                $question->answers()->delete();
+                $image = $question->image_question;
+                CloudinaryStorage::delete($image);
                 $question->delete();
                 return response()->json([
-                    'message' => 'question deleted'
-                ]);
+                    'message' => 'question deleted successfully'
+                ], 200);
             } else {
                 return response()->json([
                     'message' => 'question id not found'
