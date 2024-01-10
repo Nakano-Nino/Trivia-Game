@@ -30,16 +30,16 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func DecodeToken(tokenString string) (*jwt.Token, error) {
+func DecodeToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := VerifyToken(tokenString)
 	if err != nil {
 		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
-	if ok && token.Valid {
-		return &jwt.Token{Claims: claims}, nil
+	if !ok || !token.Valid {
+		return nil, fmt.Errorf("invalid token")
 	}
 
-	return nil, fmt.Errorf("failed to decode token")
+	return claims, nil
 }
