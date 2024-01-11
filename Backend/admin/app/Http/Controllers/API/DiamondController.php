@@ -5,11 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CloudinaryStorage;
 use Illuminate\Http\Request;
-use App\Models\Avatar;
+use App\Models\Diamond;
 use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Validator;
 
-class AvatarController extends Controller
+class DiamondController extends Controller
 {
     public function __construct()
     {
@@ -19,9 +20,9 @@ class AvatarController extends Controller
     public function findAll()
     {
         try{
-            $avatars = Avatar::all();
+            $diamonds = Diamond::all();
             return response()->json([
-                'data' => $avatars
+                'data' => $diamonds
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -35,30 +36,31 @@ class AvatarController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'avatar' => 'required|image',
+                'amount' => 'required',
+                'image' => 'required|image',
                 'price' => 'required',
             ]);
 
             try {
-                $image = $request->file('avatar');
-                $folderPath = 'Trivia/Avatar';
-                $tags = 'Trivia, CelebMinds, Avatar';
+                $image = $request->file('image');
+                $folderPath = 'Trivia/Diamond';
+                $tags = 'Trivia, CelebMinds, Diamond';
                 $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName(), $folderPath, $tags);
-
             } catch (CloudinaryException $e) {
                 return response()->json([
                     'message' => $e->getMessage()
                 ], 500);
             }
 
-            $avatar = Avatar::create([
-                'avatar' => $response,
+            $diamonds = Diamond::create([
+                'image' => $response,
+                'amount' => $request->amount,
                 'price' => $request->price,
             ]);
             return response()->json([
-                'message' => 'Avatar created successfully',
-                'avatar' => $avatar
-            ],200);
+                'message' => 'Diamond created successfully',
+                'diamonds' => $diamonds
+            ], 201);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'something when wrong',
@@ -70,18 +72,18 @@ class AvatarController extends Controller
     public function delete(Request $request)
     {
         try {
-            $avatar = Avatar::where('id', $request->id)->first();
-            if ($avatar) {
-                $image = $avatar->avatar;
-                $folderPath = 'Trivia/Avatar';
+            $diamond = Diamond::where('id', $request->id)->first();
+            if ($diamond) {
+                $image = $diamond->image;
+                $folderPath = 'Trivia/Diamond';
                 CloudinaryStorage::delete($image, $folderPath);
-                $avatar->delete();
+                $diamond->delete();
                 return response()->json([
-                    'message' => 'Avatar deleted successfully',
+                    'message' => 'Diamond deleted successfully',
                 ], 200);
             } else {
                 return response()->json([
-                    'message' => 'Avatar not found',
+                    'message' => 'Diamond not found',
                 ], 404);
             }
         } catch (\Throwable $th) {
