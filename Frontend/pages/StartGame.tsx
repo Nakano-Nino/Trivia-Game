@@ -20,18 +20,14 @@ interface DecodedToken {
   name: string;
 }
 const StartGame = () => {
-  const [isModalVisible, setModalVisible] = useState(false);
   const token = localStorage.getItem("user") + "";
   const { avatar, name } = jwtDecode<DecodedToken>(token);
-  const [coba, cobain] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalDiamond, setModalDiamond] = useState(false);
   const toggleModalDiamond = () => {
-    cobain(!coba);
+    setModalDiamond(!isModalDiamond);
   };
   const toggleProfileEdit = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
@@ -57,13 +53,12 @@ const StartGame = () => {
           source={require("../assets/diamond.png")}
         />
       </View>
-      <Text>Hello, {name}</Text>
       <View>
         <Image style={styles.avatar} source={{ uri: avatar || "" }} />
         <TouchableOpacity style={styles.edit} onPress={toggleProfileEdit}>
           <FaEdit />
         </TouchableOpacity>
-        <Text style={styles.textup}>Mazyk Breng</Text>
+        <Text style={styles.textup}>Hello, {name}</Text>
       </View>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.text}>Play Game</Text>
@@ -71,7 +66,7 @@ const StartGame = () => {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={coba}
+        visible={isModalDiamond}
         onRequestClose={toggleModalDiamond}
       >
         <View style={styles.modalContainer}>
@@ -340,7 +335,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 300,
     height: 50,
-    borderRadius: 17,
+    borderRadius: 10,
     marginTop: 17,
     flexDirection: "row",
     alignItems: "center",
@@ -372,7 +367,7 @@ const styles = StyleSheet.create({
   },
   edit: {
     position: "absolute",
-    top: 60,
+    top: 120,
     left: 130,
     fontSize: 30,
     color: "white",

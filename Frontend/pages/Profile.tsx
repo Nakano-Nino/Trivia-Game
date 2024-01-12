@@ -176,7 +176,15 @@ const Profile = () => {
               console.log("Selected Avatar:", item);
             }}
           >
-            <Image style={styles.avatar} source={{ uri: item.imageUrl }} />
+                 <Image
+        style={[
+          styles.avatar,
+          selectedAvatar && selectedAvatar.id === item.id
+            ? styles.activeAvatar
+            : null,
+        ]}
+        source={{ uri: item.imageUrl }}
+      />
           </TouchableOpacity>
         ))}
       </View>
@@ -239,8 +247,9 @@ const styles = StyleSheet.create({
   },
   textup: {
     fontSize: 20,
-    marginBottom: 10,
+    marginBottom: 30,
     color: "white",
+    fontWeight: "bold",
   },
   inputContainer: {
     flexDirection: "row",
@@ -267,7 +276,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 300,
     height: 50,
-    borderRadius: 17,
+    borderRadius: 10,
     marginTop: 17,
     flexDirection: "row",
     alignItems: "center",
@@ -276,12 +285,16 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   text: {
-    color: "black",
+    color: "#0F1035",
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 20,
     alignItems: "center",
     marginLeft: 10,
     alignContent: "center",
+  },
+  activeAvatar: {
+    borderWidth: 2, // You can customize the style for the active avatar
+    borderColor: "#5ce1e6", // Border color for the active avatar
   },
 });
