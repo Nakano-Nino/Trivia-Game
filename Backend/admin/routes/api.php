@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\AvatarController;
 use App\Http\Controllers\API\QuestionController;
+use App\Http\Controllers\API\DiamondController;
 
 
 Route::controller(AuthController::class)->group(function () {
@@ -18,8 +19,6 @@ Route::controller(AuthController::class)->group(function () {
 Route::controller(AvatarController::class)->group(function () {
     Route::get('avatars', 'findAll');
     Route::post('avatars', 'create');
-    // Route::get('avatars/{id}', 'findOne');
-    Route::patch('avatars/{id}', 'update');
     Route::delete('avatars/{id}', 'delete');
 });
 
@@ -27,6 +26,11 @@ Route::controller(QuestionController::class)->group(function () {
     Route::get('questions', 'findAll');
     Route::post('questions', 'create');
     Route::get('questions/{id}', 'findOne');
-    Route::patch('questions/{id}', 'update');
     Route::delete('questions/{id}', 'delete');
+});
+
+Route::controller(DiamondController::class)->group(function () {
+    Route::get('diamonds', 'findAll');
+    Route::post('diamonds', 'create');
+    Route::delete('diamonds/{id}', 'delete');
 });

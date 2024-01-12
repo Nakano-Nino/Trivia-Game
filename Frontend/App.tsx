@@ -8,14 +8,17 @@ import "react-native-gesture-handler"
 import Profile from "./pages/Profile"
 import SplashScreen from "./pages/SplashScreen"
 import StartGame from "./pages/StartGame"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import FindMatch from "./pages/FindMatch"
+// import { store } from "./redux/store";
+// import { Provider } from "react-redux";
 
 const Stack = createStackNavigator()
 const App = () => {
   return (
     <>
+    {/* <Provider store={store}> */}
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="SplashScreen">
+        <Stack.Navigator initialRouteName="FindMatch">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -36,8 +39,15 @@ const App = () => {
             component={StartGame}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="FindMatch"
+            component={FindMatch}
+            options={{ headerShown: false }}
+          />
+
         </Stack.Navigator>
       </NavigationContainer>
+      {/* </Provider> */}
     </>
   )
 }

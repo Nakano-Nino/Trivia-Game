@@ -29,8 +29,8 @@ class CloudinaryStorage extends Controller
         return self::upload($image, $public_id);
     }
 
-    public static function delete($path){
-        $public_id = self::folder_path.'/'.self::path($path);
+    public static function delete($path, $folderPath){
+        $public_id = $folderPath.'/'.self::path($path);
         return cloudinary()->destroy($public_id);
     }
 }

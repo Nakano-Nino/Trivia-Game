@@ -92,66 +92,14 @@ class QuestionController extends Controller
         }
     }
 
-    public function update(Request $request, Questions $questions)
-    {
-        try {
-            $questions = Questions::where('id', $request->id)->first();
-            if ($questions) {
-                $validatedData = $request->validate([
-                    'A' => 'required',
-                    'B' => 'required',
-                    'C' => 'required',
-                    'D' => 'required',
-                    'answer' => 'required',
-                ]);
-                
-                if ($request->hasFile('image_question')) {
-                    $image = $request->file('image_question');
-                    $imageStored = $questions->image_question;
-
-                    CloudinaryStorage::delete($imageStored);
-
-                    $folderPath = 'Trivia/Question';
-                    $tags = 'Trivia, CelebMinds, Question';
-                    $response = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName(), $folderPath, $tags);
-                    $questions->update([
-                        'image_question' => $response,
-                        'A' => $request->A,
-                        'B' => $request->B,
-                        'C' => $request->C,
-                        'D' => $request->D,
-                        'answer' => $request->answer,
-                    ]);
-                } else {
-                    $questions->update([
-                        'A' => $request->A,
-                        'B' => $request->B,
-                        'C' => $request->C,
-                        'D' => $request->D,
-                        'answer' => $request->answer,
-                    ]);
-                }
-
-                return response()->json([
-                    'message' => 'question updated successfully',
-                    'data' => $questions
-                ], 200);
-            }
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'something went wrong',
-                'error' => $th->getMessage(),   
-            ], 500);
-        }
-    }
-
     public function delete(Request $request)
     {
         try {
             $question = Questions::where('id', $request->id)->first();
             if ($question) {
                 $image = $question->image_question;
-                CloudinaryStorage::delete($image);
+                $folderPath = 'Trivia/Question';
+                CloudinaryStorage::delete($image, $folderPath);
                 $question->delete();
                 return response()->json([
                     'message' => 'question deleted successfully'
