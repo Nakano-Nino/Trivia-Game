@@ -1,16 +1,15 @@
 import "./App.css"
 import { Route, Routes } from "react-router-dom"
-import Sidemenu from "./pages/Sidemenu"
 import LoginForm from "./pages/LoginForm"
 import RegisterForm from "./pages/RegisterForm"
+import AddAvatar from "./pages/AddAvatar"
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Sidemenu />}></Route>
-      <Route path="/login" element={<LoginForm />}></Route>
+      <Route path="/" element={<LoginForm />}></Route>
       <Route path="/register" element={<RegisterForm />}></Route>
+      <Route path="/avatar" element={<AddAvatar />}></Route>
     </Routes>
   )
 }
-
 export default App

@@ -3,7 +3,12 @@ import React from "react"
 import { Box } from "@chakra-ui/react"
 
 import HeaderPanel from "../components/Header"
-const Sidemenu: React.FC = () => {
+import FormUpload from "./FormUpload"
+const AddAvatar: React.FC = () => {
+  const handleCreate = (data: any) => {
+    // Lakukan apa yang diperlukan ketika data dibuat
+    console.log("Data created:", data)
+  }
   return (
     <Box className="border-2">
       <HeaderPanel
@@ -12,12 +17,11 @@ const Sidemenu: React.FC = () => {
       />
       <div className="flex container" style={{ flexDirection: "row" }}>
         <Box className="justify-center">
-          <h1>Main Content</h1>
-          <p>Your main content goes here.</p>
+          <FormUpload onCreate={handleCreate} />
         </Box>
       </div>
     </Box>
   )
 }
 
-export default Sidemenu
+export default AddAvatar

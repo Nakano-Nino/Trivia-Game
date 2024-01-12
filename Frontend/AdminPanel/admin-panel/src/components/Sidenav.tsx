@@ -7,11 +7,13 @@ import {
   DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
+  Link,
 } from "@chakra-ui/react"
 import { MdOutlineQuestionAnswer } from "react-icons/md"
 import { IoDiamondOutline } from "react-icons/io5"
 import { RxAvatar } from "react-icons/rx"
 import LogoutButton from "./Logout"
+import { NavLink } from "react-router-dom"
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
@@ -29,14 +31,18 @@ const Sidenav: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           style={{ alignItems: "center" }}
         >
           <ul className="flex flex-col space-y-6">
-            <button className="flex items-center hover:text-blue-500">
-              <MdOutlineQuestionAnswer className="mr-2 size-8" />
-              <li className="py-2 ">Guess</li>
-            </button>
-            <button className="flex items-center hover:text-blue-500">
-              <RxAvatar className="mr-2 size-8" />
-              <li className="py-2">Avatar</li>
-            </button>
+            <NavLink to="/question">
+              <button className="flex items-center hover:text-blue-500">
+                <MdOutlineQuestionAnswer className="mr-2 size-8" />
+                <li className="py-2 ">Question</li>
+              </button>
+            </NavLink>
+            <NavLink to="/avatar">
+              <button className="flex items-center hover:text-blue-500">
+                <RxAvatar className="mr-2 size-8" />
+                <li className="py-2">Avatar</li>
+              </button>
+            </NavLink>
           </ul>
         </DrawerBody>
         <LogoutButton />

@@ -10,14 +10,38 @@ import {
   Box,
 } from "@chakra-ui/react"
 import Logo from "../components/Logo"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import Swal from "sweetalert2"
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
-  const handleLogin = () => {
-    // Proses login disini
-    console.log("Logging in...", { username, password })
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      const response = await axios.post("http://localhost:8000/api/login", {
+        username,
+        password,
+      })
+
+      console.log("Login successful:", response.data)
+      localStorage.setItem("token", response.data.authorization.token)
+      Swal.fire({
+        icon: "success",
+        title: "Login Success!",
+        showConfirmButton: false,
+        timer: 1500,
+      })
+      navigate("/avatar")
+    } catch (error: any) {
+      console.error(
+        "Login failed:",
+        error.response?.data?.message || "An error occurred"
+      )
+    }
   }
 
   return (

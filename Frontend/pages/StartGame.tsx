@@ -95,7 +95,7 @@ const StartGame = () => {
                 <TouchableOpacity>
                   <Image
                     style={styles.image}
-                    source={require("../assets/Diamond1.png")}
+                    source={require("../assets/diamond1.png")}
                   />
                   <Text style={styles.PriceDiamond}>Rp. 16.000 </Text>
                 </TouchableOpacity>
@@ -105,7 +105,7 @@ const StartGame = () => {
                 <TouchableOpacity>
                   <Image
                     style={styles.image}
-                    source={require("../assets/Diamond2.png")}
+                    source={require("../assets/diamond2.png")}
                   />
                   <Text style={styles.PriceDiamond}>Rp. 13.000 </Text>
                 </TouchableOpacity>
@@ -115,7 +115,7 @@ const StartGame = () => {
                 <TouchableOpacity>
                   <Image
                     style={styles.image}
-                    source={require("../assets/Diamond3.png")}
+                    source={require("../assets/diamond3.png")}
                   />
                   <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
                 </TouchableOpacity>
@@ -125,7 +125,7 @@ const StartGame = () => {
                 <TouchableOpacity>
                   <Image
                     style={styles.image}
-                    source={require("../assets/Diamond4.png")}
+                    source={require("../assets/diamond4.png")}
                   />
                   <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
                 </TouchableOpacity>
@@ -135,7 +135,7 @@ const StartGame = () => {
                 <TouchableOpacity>
                   <Image
                     style={styles.image}
-                    source={require("../assets/Diamond5.png")}
+                    source={require("../assets/diamond5.png")}
                   />
                   <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
                 </TouchableOpacity>
