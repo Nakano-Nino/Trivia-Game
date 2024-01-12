@@ -4,6 +4,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 
 const SplashScreen = () => {
+  
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg1.png")} />

@@ -1,53 +1,52 @@
-import React from "react"
-import { StatusBar } from "expo-status-bar"
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import * as WebBrowser from "expo-web-browser"
-import * as Google from "expo-auth-session/providers/google"
-import { useNavigation } from "@react-navigation/native"
-import { useState } from "react"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import axios from "axios"
-
-WebBrowser.maybeCompleteAuthSession()
+import React from "react";
+import { StatusBar } from "expo-status-bar";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+WebBrowser.maybeCompleteAuthSession();
 interface UserInfo {
-  avatar?: string
-  email: string
-  name: string
+  avatar?: string;
+  email: string;
+  name: string;
 }
 
 const LandingPage = () => {
-  const [authInProgress, setAuthInProgress] = useState(false)
-  const navigate = useNavigation()
+  const [authInProgress, setAuthInProgress] = useState(false);
+  const navigate = useNavigation();
   const config = {
     webClientId:
       "864096410384-9kj4i25qqqsr2vkhpkhg8m0qmurk9ah7.apps.googleusercontent.com",
-  }
-  const [request, response, promptAsync] = Google.useAuthRequest(config)
+  };
+  const [request, response, promptAsync] = Google.useAuthRequest(config);
 
   const getLocalUser = async () => {
     try {
-      const data = await AsyncStorage.getItem("user")
-      if (!data) return null
-      return JSON.parse(data) as UserInfo
+      const data = await AsyncStorage.getItem("user");
+      if (!data) return null;
+      return JSON.parse(data) as UserInfo;
     } catch (error) {
-      console.log("Error getting local user:", error)
-      return null
+      console.log("Error getting local user:", error);
+      return null;
     }
-  }
+  };
 
   const handlePress = async () => {
-    const user = await getLocalUser()
+    const user = await getLocalUser();
 
     if (!user) {
-      setAuthInProgress(true)
-      const result = await promptAsync()
+      setAuthInProgress(true);
+      const result = await promptAsync();
       if (result.type == "success") {
         const user = await getUserInfo(
           result?.authentication?.accessToken || ""
-        )
+        );
 
-        const email = user?.email
+        const email = user?.email;
 
         axios
           .get("http://localhost:8000/api/v1/user", { params: { email } })
@@ -56,56 +55,56 @@ const LandingPage = () => {
               axios
                 .post("http://localhost:8000/api/v1/createUser", user)
                 .then((res) => {
-                  console.log(res)
+                  console.log(res);
 
                   if (res.data.code == 200) {
                     localStorage.setItem(
                       "user",
                       JSON.stringify(res?.data?.data.token)
-                    )
-                    navigate.navigate("Profile" as never)
+                    );
+                    navigate.navigate("Profile" as never);
                   }
-                })
+                });
             } else {
               localStorage.setItem(
                 "user",
                 JSON.stringify(res?.data?.data.token)
-              )
-              navigate.navigate("StartGame" as never)
+              );
+              navigate.navigate("StartGame" as never);
             }
           })
           .catch((err) => {
-            console.log(err)
-          })
+            console.log(err);
+          });
       }
     } else {
-      console.log(user)
-      console.log("loaded locally")
-      navigate.navigate("Start" as never)
+      console.log(user);
+      console.log("loaded locally");
+      navigate.navigate("Start" as never);
     }
-  }
+  };
 
   const getUserInfo = async (token: string) => {
-    if (!token) return
+    if (!token) return;
     try {
       const response = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      )
+      );
 
-      const user = await response.json()
+      const user = await response.json();
 
-      return user
+      return user;
 
       // await AsyncStorage.setItem("user", JSON.stringify(user));
       // setAuthInProgress(false);
     } catch (error) {
-      console.log("Error fetching user info:", error)
-      setAuthInProgress(false)
+      console.log("Error fetching user info:", error);
+      setAuthInProgress(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -119,9 +118,9 @@ const LandingPage = () => {
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
-export default LandingPage
+  );
+};
+export default LandingPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -139,30 +138,31 @@ const styles = StyleSheet.create({
     width: 400,
     height: 400,
     position: "relative",
-    marginTop: 40,
+    marginTop: 180,
     marginRight: 20,
   },
   logo2: {
-    width: 20,
-    height: 20,
-    marginLeft: 20,
+    width: 30,
+    height: 30,
+    marginLeft: 10,
+    backgroundColor: "white",
   },
   button: {
-    backgroundColor: "white",
+    backgroundColor: "#3081D0",
     padding: 10,
     width: 300,
     height: 50,
-    borderRadius: 40,
-    marginTop: 200,
+    borderRadius: 5,
+    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
   },
   text: {
-    color: "black",
+    color: "white",
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 20,
     alignItems: "center",
     marginLeft: 10,
   },
-})
+});
