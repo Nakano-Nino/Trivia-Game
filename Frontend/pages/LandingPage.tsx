@@ -47,18 +47,20 @@ const LandingPage = () => {
         
         const email = user?.email
 
-        axios.get("http://localhost:8000/api/v1/user", {params: {email}})
+        axios.get("https://wondrous-moth-complete.ngrok-free.app/api/v1/user", {params: {email}, headers: {"ngrok-skip-browser-warning": "true"}})
           .then((res) => {    
             if (res.data.code == 404) {
-              axios.post("http://localhost:8000/api/v1/createUser", user)
+              axios.post("https://wondrous-moth-complete.ngrok-free.app/api/v1/createUser", user)
               .then((res) => {
                 console.log(res)
-                
                 if (res.data.code == 200) {
+
                   navigate.navigate("Profile" as never)
                 }
               })
             } else {
+              console.log(res);
+              
               localStorage.setItem("user", JSON.stringify(res?.data.data.token))
               navigate.navigate("Start" as never)
             }

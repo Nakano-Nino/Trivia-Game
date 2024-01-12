@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	dto "github.com/Nakano-Nino/Trivia-Game/dto/result"
 	usersdto "github.com/Nakano-Nino/Trivia-Game/dto/users"
 	"github.com/Nakano-Nino/Trivia-Game/models"
 	jwtToken "github.com/Nakano-Nino/Trivia-Game/pkg/jwt"
-	"github.com/Nakano-Nino/Trivia-Game/repositories"
+	"github.com/Nakano-Nino/Trivia-Game/repositories/users"
 	"github.com/go-playground/validator"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -18,10 +19,10 @@ import (
 const aud = "499994503524-88e2rd415lra144ho7hb6ibsao3rpqro.apps.googleusercontent.com"
 
 type handler struct {
-	UserRepository repositories.UserRepository
+	UserRepository users.UserRepository
 }
 
-func Handleuser(UserRepository repositories.UserRepository) *handler {
+func Handleuser(UserRepository users.UserRepository) *handler {
 	return &handler{UserRepository}
 }
 
@@ -38,11 +39,47 @@ func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: ConvertResponse(user)}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	request := new(usersdto.GetUserRequest)
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	validation := validator.New()
+	err := validation.Struct(request)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	fmt.Println(request)
+
+	user, err := h.UserRepository.Login(request.Email)
+	if err != nil {
+		w.WriteHeader(http.StatusOK)
+		response := dto.ErrorResult{Code: http.StatusNotFound, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 	claims := jwt.MapClaims{}
 	claims["id"] = user.ID
 	claims["name"] = user.Name
 	claims["email"] = user.Email
 	claims["avatar"] = user.Avatar
+	claims["diamond"] = user.Diamond
 
 	token, errGenerateToken := jwtToken.GenerateToken(&claims)
 	if errGenerateToken != nil {
@@ -65,7 +102,7 @@ func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	request := new(usersdto.CreateUserRequest)
@@ -89,10 +126,11 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		Name:   request.Name,
 		Email:  request.Email,
 		Avatar: request.Avatar,
+		Diamond: 0,
 		Role:   "user",
 	}
 
-	data, err := h.UserRepository.CreateUser(user)
+	data, err := h.UserRepository.SignUp(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
@@ -104,6 +142,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	claims["name"] = data.Name
 	claims["email"] = data.Email
 	claims["avatar"] = data.Avatar
+	claims["diamond"] = data.Diamond
 
 	token, errGenerateToken := jwtToken.GenerateToken(&claims)
 	if errGenerateToken != nil {
@@ -129,6 +168,33 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var name = r.FormValue("name")
 	var avatar = r.FormValue("avatar")
+	var diamond = r.FormValue("diamond")
+
+	dm, err := strconv.Atoi(diamond)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	// request := new(usersdto.UpdateUserRequest)
+	// if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
+
+	// validation := validator.New()
+	// err := validation.Struct(request)
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
 
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	email := userInfo["email"].(string)
@@ -145,7 +211,13 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		user.Name = name
 	}
 
-	user.Avatar = avatar
+	if avatar != "" {
+		user.Avatar = avatar
+	}
+
+	if diamond != "0" {
+		user.Diamond = dm
+	}
 
 	data, err := h.UserRepository.UpdateUser(user)
 	if err != nil {
@@ -157,6 +229,7 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	userInfo["name"] = data.Name
 	userInfo["avatar"] = data.Avatar
+	userInfo["diamond"] = data.Diamond
 
 	token, errGenerateToken := jwtToken.GenerateToken(&userInfo)
 	if errGenerateToken != nil {
@@ -175,7 +248,6 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: Resp}
 	json.NewEncoder(w).Encode(response)
-	return
 }
 
 func ConvertResponse(u models.User) usersdto.UserResponse {
@@ -184,6 +256,7 @@ func ConvertResponse(u models.User) usersdto.UserResponse {
 		Name:   u.Name,
 		Email:  u.Email,
 		Avatar: u.Avatar,
+		Diamond: u.Diamond,
 		Role:   u.Role,
 	}
 }
