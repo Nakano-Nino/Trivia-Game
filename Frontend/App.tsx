@@ -7,14 +7,14 @@ import LandingPage from "./pages/LandingPage"
 import "react-native-gesture-handler"
 import Profile from "./pages/Profile"
 import SplashScreen from "./pages/SplashScreen"
-import StartGame from "./pages/Start"
+import StartGame from "./pages/StartGame"
 
 const Stack = createStackNavigator()
 const App = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="LandingPage">
+        <Stack.Navigator initialRouteName="StartGame">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -31,10 +31,15 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Start"
+            name="StartGame"
             component={StartGame}
             options={{ headerShown: false }}
           />
+          {/* <Stack.Screen
+            name="ModalDiamond"
+            component={ModalDiamond}
+            options={{ headerShown: false }}
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </>
