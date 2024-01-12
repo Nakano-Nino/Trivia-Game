@@ -17,9 +17,10 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
-import { MaterialIcons } from "@expo/vector-icons";
-import Avatar from "../components/Avatar";
-import { FaEdit } from "react-icons/fa";
+import { MaterialIcons } from "@expo/vector-icons"
+import Avatar from "../components/Avatar"
+import { FaEdit } from "react-icons/fa"
+import { jwtDecode } from "jwt-decode"
 
 interface DataAvatar {
   id: string;
@@ -107,44 +108,44 @@ const Profile = () => {
 
   const handleUpdate = async () => {
     try {
-      const userDataString = await AsyncStorage.getItem("user");
-      console.log(userDataString);
+      const userDataString = await AsyncStorage.getItem("user")
+      console.log("User data string:", userDataString)
+      const token = JSON.parse(userDataString || "{}")
+      if (userDataString !== null) {
+        const userDecode = jwtDecode(userDataString)
+        console.log("ININININI", userDecode)
 
-      if (!userDataString) {
-        console.error("User data not found");
-        return;
+        if (!userDecode) {
+          console.error("User data not found")
+          return
+        }
+        // const userToken = userData.token
+
+        // console.log("User token:", userToken)\
       }
-      const userData = JSON.parse(userDataString);
-      console.log("User data:", userData);
-
-      const userToken = userData.token;
-
-      console.log("User token:", userToken);
 
       if (selectedAvatar) {
-        const imageUrl = selectedAvatar.imageUrl;
-        const formData = new FormData();
-        formData.append("name", userInput);
-        formData.append("avatar", imageUrl);
+        const imageUrl = selectedAvatar.imageUrl
+        const formData = new FormData()
+        formData.append("name", userInput)
+        formData.append("avatar", imageUrl)
+        formData.append("diamond", "0")
         const response = await axios.patch(
-          "http://localhost:8000/api/v1/updateUser",
+          "https://wondrous-moth-complete.ngrok-free.app/api/v1/update-user",
           formData,
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${userData}`,
+              Authorization: `Bearer ${token}`,
             },
           }
-        );
-        // Check if the server response contains the updated user information
-        const updatedUserData = response.data.data;
+        )
+        const updatedUserData = response.data.data
         if (updatedUserData) {
-          console.log("Update successful", updatedUserData);
-          const newToken = updatedUserData.token;
-          await AsyncStorage.setItem("user", newToken);
-          navigation.navigate("StartGame" as never);
-          // If you want to update the UI with the new user data, use a state or any other appropriate mechanism
-          // Example: setUserName(updatedUserData.name);
+          console.log("Update successful", updatedUserData)
+          const newToken = updatedUserData.token
+          await AsyncStorage.setItem("user", newToken)
+          navigation.navigate("StartGame" as never)
         } else {
           console.error("Update failed - No updated user data in the response");
         }
