@@ -9,7 +9,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticable;
 
-class User extends Authenticable implements JWTSubject
+class Admin extends Authenticable implements JWTSubject
 {
     use HasFactory, Notifiable, HasApiTokens;
     protected $fillable = [
