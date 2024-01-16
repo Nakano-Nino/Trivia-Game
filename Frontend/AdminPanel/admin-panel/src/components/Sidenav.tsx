@@ -7,7 +7,6 @@ import {
   DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
-  Link,
 } from "@chakra-ui/react"
 import { MdOutlineQuestionAnswer } from "react-icons/md"
 import { IoDiamondOutline } from "react-icons/io5"
@@ -31,16 +30,33 @@ const Sidenav: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           style={{ alignItems: "center" }}
         >
           <ul className="flex flex-col space-y-6">
-            <NavLink to="/question">
+            <NavLink
+              to="/question"
+              className={({ isActive }) => (isActive ? "text-blue-500" : "")}
+            >
               <button className="flex items-center hover:text-blue-500">
                 <MdOutlineQuestionAnswer className="mr-2 size-8" />
-                <li className="py-2 ">Question</li>
+                <li className="py-2">Question</li>
               </button>
             </NavLink>
-            <NavLink to="/avatar">
+
+            <NavLink
+              to="/avatar"
+              className={({ isActive }) => (isActive ? "text-blue-500" : "")}
+            >
               <button className="flex items-center hover:text-blue-500">
                 <RxAvatar className="mr-2 size-8" />
                 <li className="py-2">Avatar</li>
+              </button>
+            </NavLink>
+
+            <NavLink
+              to="/diamond"
+              className={({ isActive }) => (isActive ? "text-blue-500" : "")}
+            >
+              <button className="flex items-center hover:text-blue-500">
+                <IoDiamondOutline className="mr-2 size-8" />
+                <li className="py-2">Diamond</li>
               </button>
             </NavLink>
           </ul>
