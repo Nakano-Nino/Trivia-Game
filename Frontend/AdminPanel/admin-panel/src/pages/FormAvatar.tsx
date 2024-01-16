@@ -18,12 +18,13 @@ interface FormUploadProps {
   onCreate: (data: any) => void
 }
 
-const FormUpload: React.FC<FormUploadProps> = ({ onCreate }) => {
+const FormAvatar: React.FC<FormUploadProps> = ({ onCreate }) => {
   const [formData, setFormData] = useState<FormData>({
     avatar: null,
     price: 0,
   })
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -55,6 +56,7 @@ const FormUpload: React.FC<FormUploadProps> = ({ onCreate }) => {
     e.preventDefault()
 
     try {
+      setLoading(true)
       const formDataToSend = new FormData()
       formDataToSend.append("avatar", formData.avatar as File)
       formDataToSend.append("price", formData.price.toString())
@@ -88,6 +90,8 @@ const FormUpload: React.FC<FormUploadProps> = ({ onCreate }) => {
       setPreviewImage(null)
     } catch (error) {
       console.error("Error creating data:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -119,8 +123,8 @@ const FormUpload: React.FC<FormUploadProps> = ({ onCreate }) => {
             />
           </FormControl>
 
-          <Button type="submit" colorScheme="teal">
-            Upload Data
+          <Button type="submit" colorScheme="teal" disabled={loading}>
+            {loading ? "Uploading Data..." : "Upload Data"}
           </Button>
         </VStack>
       </form>
@@ -128,4 +132,4 @@ const FormUpload: React.FC<FormUploadProps> = ({ onCreate }) => {
   )
 }
 
-export default FormUpload
+export default FormAvatar

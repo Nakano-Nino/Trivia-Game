@@ -3,9 +3,10 @@ import React from "react"
 import { Box } from "@chakra-ui/react"
 
 import HeaderPanel from "../components/Header"
-import FormAvatar from "./FormAvatar"
-const AddAvatar: React.FC = () => {
+import FormDiamond from "./FormDiamond"
+const AddDiamond: React.FC = () => {
   const handleCreate = (data: any) => {
+    // Lakukan apa yang diperlukan ketika data dibuat
     console.log("Data created:", data)
   }
   return (
@@ -16,11 +17,11 @@ const AddAvatar: React.FC = () => {
       />
       <div className="flex container" style={{ flexDirection: "row" }}>
         <Box className="justify-center">
-          <FormAvatar onCreate={handleCreate} />
+          <FormDiamond onCreate={handleCreate} />
         </Box>
       </div>
     </Box>
   )
 }
 
-export default AddAvatar
+export default AddDiamond

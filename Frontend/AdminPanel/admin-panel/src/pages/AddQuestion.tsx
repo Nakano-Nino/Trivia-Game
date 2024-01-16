@@ -3,8 +3,8 @@ import React from "react"
 import { Box } from "@chakra-ui/react"
 
 import HeaderPanel from "../components/Header"
-import FormAvatar from "./FormAvatar"
-const AddAvatar: React.FC = () => {
+import FormQuestions from "./FormQuestions"
+const AddQuestion: React.FC = () => {
   const handleCreate = (data: any) => {
     console.log("Data created:", data)
   }
@@ -15,12 +15,12 @@ const AddAvatar: React.FC = () => {
         description="All in one web for manage Celeb Minds APP"
       />
       <div className="flex container" style={{ flexDirection: "row" }}>
-        <Box className="justify-center">
-          <FormAvatar onCreate={handleCreate} />
+        <Box>
+          <FormQuestions onCreate={handleCreate} />
         </Box>
       </div>
     </Box>
   )
 }
 
-export default AddAvatar
+export default AddQuestion

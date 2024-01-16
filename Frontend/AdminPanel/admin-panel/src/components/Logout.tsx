@@ -1,20 +1,24 @@
 import React, { useState } from "react"
 import { FaSignOutAlt } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
+import Swal from "sweetalert2"
 
 const LogoutButton: React.FC = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    // Process logout here
     setIsLoggingOut(true)
-
-    // Simulate logout delay
     setTimeout(() => {
-      // Replace with the login route or the appropriate route
-      navigate("/login")
+      localStorage.removeItem("token")
+      navigate("/")
     }, 1000)
+    Swal.fire({
+      icon: "success",
+      title: "Logout Success!",
+      showConfirmButton: false,
+      timer: 1200,
+    })
   }
 
   return (
