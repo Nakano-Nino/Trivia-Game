@@ -9,6 +9,7 @@ import Profile from "./pages/Profile"
 import SplashScreen from "./pages/SplashScreen"
 import StartGame from "./pages/StartGame"
 import FindMatch from "./pages/FindMatch"
+import Socket from "./pages/Socket"
 // import { store } from "./redux/store";
 // import { Provider } from "react-redux";
 
@@ -18,7 +19,7 @@ const App = () => {
     <>
     {/* <Provider store={store}> */}
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="FindMatch">
+        <Stack.Navigator initialRouteName="SplashScreen">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -42,6 +43,11 @@ const App = () => {
           <Stack.Screen
             name="FindMatch"
             component={FindMatch}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Socket"
+            component={Socket}
             options={{ headerShown: false }}
           />
 

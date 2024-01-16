@@ -14,6 +14,7 @@ import { IoDiamond } from "react-icons/io5";
 import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { jwtDecode } from "jwt-decode";
+import { useNavigation } from "@react-navigation/native";
 
 interface DecodedToken {
   avatar: string;
@@ -24,6 +25,7 @@ const StartGame = () => {
   const { avatar, name } = jwtDecode<DecodedToken>(token);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isModalDiamond, setModalDiamond] = useState(false);
+  const navigate = useNavigation();
   const toggleModalDiamond = () => {
     setModalDiamond(!isModalDiamond);
   };
@@ -61,7 +63,7 @@ const StartGame = () => {
         <Text style={styles.textup}>Hello, {name}</Text>
       </View>
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.text}>Play Game</Text>
+        <Text style={styles.text} onPress={() => navigate.navigate("Socket" as never)}>Play Game</Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"
