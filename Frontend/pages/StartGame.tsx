@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Modal,
+  ScrollView,
 } from "react-native";
 import Avatar from "../components/Avatar";
 import { StatusBar } from "expo-status-bar";
@@ -72,11 +73,11 @@ const StartGame = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={styles.buttonClose}
               onPress={toggleModalDiamond}
             >
               <FontAwesome
-                style={styles.modalButtonText}
+                style={styles.buttonCloseText}
                 name="times"
                 size={24}
                 color="black"
@@ -163,11 +164,11 @@ const StartGame = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={styles.buttonClose}
               onPress={toggleProfileEdit}
             >
               <FontAwesome
-                style={styles.modalButtonText}
+                style={styles.buttonCloseText}
                 name="times"
                 size={24}
                 color="black"
@@ -175,80 +176,109 @@ const StartGame = () => {
               />
             </TouchableOpacity>
 
-            <View style={styles.modalAvatar}>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/avatar1.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>Free</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/avatar2.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>Free</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/avatar3.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>Free</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/Vip1.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>
-                    25{" "}
+            <ScrollView>
+              <View style={styles.modalAvatar}>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
                     <Image
-                      style={styles.imageDiamond}
-                      source={require("../assets/diamond.png")}
+                      style={styles.imageAvatar}
+                      source={require("../assets/avatar1.png")}
                     />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/Vip2.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>
-                    25{" "}
+                    <Text style={styles.priceDiamondAvatar}>Free</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
                     <Image
-                      style={styles.imageDiamond}
-                      source={require("../assets/diamond.png")}
+                      style={styles.imageAvatar}
+                      source={require("../assets/avatar1.png")}
                     />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/Vip3.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>
-                    25{" "}
+                    <Text style={styles.priceDiamondAvatar}>Free</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
                     <Image
-                      style={styles.imageDiamond}
-                      source={require("../assets/diamond.png")}
+                      style={styles.imageAvatar}
+                      source={require("../assets/avatar1.png")}
                     />
-                  </Text>
-                </TouchableOpacity>
+                    <Text style={styles.priceDiamondAvatar}>Free</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.imageAvatar}
+                      source={require("../assets/avatar1.png")}
+                    />
+                    <Text style={styles.priceDiamondAvatar}>Free</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.imageAvatar}
+                      source={require("../assets/avatar2.png")}
+                    />
+                    <Text style={styles.priceDiamondAvatar}>Free</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.imageAvatar}
+                      source={require("../assets/avatar3.png")}
+                    />
+                    <Text style={styles.priceDiamondAvatar}>Free</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.imageAvatar}
+                      source={require("../assets/Vip1.png")}
+                    />
+                    <Text style={styles.priceDiamondAvatar}>
+                      25{" "}
+                      <Image
+                        style={styles.imageDiamond}
+                        source={require("../assets/diamond.png")}
+                      />
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.imageAvatar}
+                      source={require("../assets/Vip2.png")}
+                    />
+                    <Text style={styles.priceDiamondAvatar}>
+                      25{" "}
+                      <Image
+                        style={styles.imageDiamond}
+                        source={require("../assets/diamond.png")}
+                      />
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.viewAvatar}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.imageAvatar}
+                      source={require("../assets/Vip3.png")}
+                    />
+                    <Text style={styles.priceDiamondAvatar}>
+                      25{" "}
+                      <Image
+                        style={styles.imageDiamond}
+                        source={require("../assets/diamond.png")}
+                      />
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            </ScrollView>
             <View>
               <TouchableOpacity style={styles.buttondiamond}>
                 <Text style={styles.textdiamond}>Save</Text>
@@ -398,7 +428,7 @@ const styles = StyleSheet.create({
 
     marginBottom: 20,
   },
-  modalButton: {
+  buttonClose: {
     padding: 1,
     backgroundColor: "red",
     borderRadius: 10,
@@ -408,7 +438,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginLeft: 340,
   },
-  modalButtonText: {
+  buttonCloseText: {
     color: "black",
     fontWeight: "bold",
     fontSize: 26,
@@ -488,6 +518,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 0,
     marginTop: 20,
+    scrollable: true,
   },
   buttondiamond: {
     display: "flex",

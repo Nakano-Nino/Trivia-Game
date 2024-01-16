@@ -9,16 +9,16 @@ import Profile from "./pages/Profile"
 import SplashScreen from "./pages/SplashScreen"
 import StartGame from "./pages/StartGame"
 import FindMatch from "./pages/FindMatch"
+import Question from "./pages/Question"
 // import { store } from "./redux/store";
 // import { Provider } from "react-redux";
-
 const Stack = createStackNavigator()
 const App = () => {
   return (
     <>
     {/* <Provider store={store}> */}
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="FindMatch">
+        <Stack.Navigator initialRouteName="Question">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -42,6 +42,11 @@ const App = () => {
           <Stack.Screen
             name="FindMatch"
             component={FindMatch}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Question"
+            component={Question}
             options={{ headerShown: false }}
           />
 

@@ -176,15 +176,15 @@ const Profile = () => {
               console.log("Selected Avatar:", item);
             }}
           >
-                 <Image
-        style={[
-          styles.avatar,
-          selectedAvatar && selectedAvatar.id === item.id
-            ? styles.activeAvatar
-            : null,
-        ]}
-        source={{ uri: item.imageUrl }}
-      />
+            <Image
+              style={[
+                styles.avatar,
+                selectedAvatar && selectedAvatar.id === item.id
+                  ? styles.activeAvatar
+                  : null,
+              ]}
+              source={{ uri: item.imageUrl }}
+            />
           </TouchableOpacity>
         ))}
       </View>

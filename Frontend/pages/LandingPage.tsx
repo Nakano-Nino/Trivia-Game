@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import LottieView from "lottie-react-native";
 WebBrowser.maybeCompleteAuthSession();
 interface UserInfo {
   avatar?: string;
@@ -108,9 +109,17 @@ const LandingPage = () => {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.background} source={require("../assets/bg1.png")} />
+      <Image style={styles.background} source={require("../assets/background1.jpg")} />
       <Image style={styles.logo1} source={require("../assets/logo1.png")} />
       <StatusBar style="auto" />
+      <View style={styles.lottieIcon}>
+      <LottieView
+        source={require("../assets/lottivew/welcome.json")}
+        
+        autoPlay
+        loop
+      />
+      </View>
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={handlePress} style={styles.button}>
           <Image style={styles.logo2} source={require("../assets/logo2.png")} />
@@ -138,7 +147,7 @@ const styles = StyleSheet.create({
     width: 400,
     height: 400,
     position: "relative",
-    marginTop: 180,
+    // marginTop: 180,
     marginRight: 20,
   },
   logo2: {
@@ -153,7 +162,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 50,
     borderRadius: 5,
-    marginTop: 10,
+    top: -50,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -164,5 +173,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     alignItems: "center",
     marginLeft: 10,
+  },
+  lottieIcon: {
+    width: 400,
+    height: 400,
+    top: 100,
+    position: "relative",
+    marginTop: -180,
+    marginRight: 20,
   },
 });
