@@ -9,18 +9,16 @@ const LoginTime: React.FC<LoginTimeProps> = ({}) => {
   const [loginTime, setLoginTime] = useState(new Date())
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setLoginTime(new Date())
-    }, 1000)
+    setLoginTime(new Date())
 
-    return () => clearInterval(intervalId)
+    return () => {}
   }, [])
 
   const formattedTime = loginTime.toLocaleTimeString()
 
   return (
     <div>
-      <p>Login Time: {formattedTime}</p>
+      <p>Login Time: {formattedTime} WIB</p>
     </div>
   )
 }

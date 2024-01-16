@@ -42,7 +42,7 @@ const HeaderPanel: React.FC<HeaderProps> = ({ title, description }) => {
         <Sidenav isOpen={isSidebarOpen} onClose={toggleSidebar} />
         <div className="flex">
           <LoginTime username={username} />
-          <Text marginLeft={"25rem"}>Hello, Admin</Text>
+          <Text marginLeft={"23rem"}>Hello, Admin</Text>
         </div>
       </Box>
     </>
