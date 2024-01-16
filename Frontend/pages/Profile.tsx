@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react"
+import { StatusBar } from "expo-status-bar"
 import {
   Image,
   Pressable,
@@ -7,15 +7,15 @@ import {
   Text,
   TextInput,
   View,
-} from "react-native";
+} from "react-native"
 import {
   FlatList,
   ScrollView,
   TouchableOpacity,
-} from "react-native-gesture-handler";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+} from "react-native-gesture-handler"
+import axios from "axios"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useNavigation } from "@react-navigation/native"
 
 import { MaterialIcons } from "@expo/vector-icons"
 import Avatar from "../components/Avatar"
@@ -23,9 +23,9 @@ import { FaEdit } from "react-icons/fa"
 import { jwtDecode } from "jwt-decode"
 
 interface DataAvatar {
-  id: string;
-  name: string;
-  imageUrl: string;
+  id: string
+  name: string
+  imageUrl: string
 }
 const Profile = () => {
   const data: DataAvatar[] = [
@@ -101,10 +101,10 @@ const Profile = () => {
       imageUrl:
         "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/kvj9hbzge1kcqeg9gkih",
     },
-  ];
-  const [userInput, setUserInput] = useState("");
-  const [selectedAvatar, setSelectedAvatar] = useState<DataAvatar | null>(null);
-  const navigation = useNavigation();
+  ]
+  const [userInput, setUserInput] = useState("")
+  const [selectedAvatar, setSelectedAvatar] = useState<DataAvatar | null>(null)
+  const navigation = useNavigation()
 
   const handleUpdate = async () => {
     try {
@@ -147,45 +147,44 @@ const Profile = () => {
           await AsyncStorage.setItem("user", newToken)
           navigation.navigate("StartGame" as never)
         } else {
-          console.error("Update failed - No updated user data in the response");
+          console.error("Update failed - No updated user data in the response")
         }
       } else {
-        console.error("Please select an avatar");
+        console.error("Please select an avatar")
       }
     } catch (error) {
-      console.error("Update failed", error);
+      console.error("Update failed", error)
     }
-  };
+  }
 
   const handleTextChange = (text: string) => {
-    setUserInput(text);
-    console.log("Input Text:", text);
-  };
+    setUserInput(text)
+    console.log("Input Text:", text)
+  }
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
       <Image style={styles.logo1} source={require("../assets/logo1.png")} />
       <StatusBar style="auto" />
-      {/* <View style={styles.avatar}></View> */}
       <Text style={styles.textup}>Select Your Avatar</Text>
       <View style={styles.grid}>
         {data.map((item) => (
           <TouchableOpacity
             key={item.id}
             onPress={() => {
-              setSelectedAvatar(item);
-              console.log("Selected Avatar:", item);
+              setSelectedAvatar(item)
+              console.log("Selected Avatar:", item)
             }}
           >
-                 <Image
-        style={[
-          styles.avatar,
-          selectedAvatar && selectedAvatar.id === item.id
-            ? styles.activeAvatar
-            : null,
-        ]}
-        source={{ uri: item.imageUrl }}
-      />
+            <Image
+              style={[
+                styles.avatar,
+                selectedAvatar && selectedAvatar.id === item.id
+                  ? styles.activeAvatar
+                  : null,
+              ]}
+              source={{ uri: item.imageUrl }}
+            />
           </TouchableOpacity>
         ))}
       </View>
@@ -205,9 +204,9 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
-export default Profile;
+  )
+}
+export default Profile
 
 const styles = StyleSheet.create({
   container: {
@@ -298,4 +297,4 @@ const styles = StyleSheet.create({
     borderWidth: 2, // You can customize the style for the active avatar
     borderColor: "#5ce1e6", // Border color for the active avatar
   },
-});
+})
