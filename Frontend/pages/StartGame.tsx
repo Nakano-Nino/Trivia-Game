@@ -1,4 +1,3 @@
-// import React from "react";
 import {
   Image,
   View,
@@ -6,31 +5,235 @@ import {
   Text,
   TouchableOpacity,
   Modal,
-} from "react-native";
-import Avatar from "../components/Avatar";
-import { StatusBar } from "expo-status-bar";
-import { FaEdit } from "react-icons/fa";
-import { IoDiamond } from "react-icons/io5";
-import React, { useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
-import { jwtDecode } from "jwt-decode";
+  ScrollView,
+} from "react-native"
+import Avatar from "../components/Avatar"
+import { StatusBar } from "expo-status-bar"
+import { FaEdit } from "react-icons/fa"
+import { IoDiamond } from "react-icons/io5"
+import React, { useEffect, useState } from "react"
+import { FontAwesome } from "@expo/vector-icons"
+import { jwtDecode } from "jwt-decode"
+import axios from "axios"
+import { GiHidden } from "react-icons/gi"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import * as WebBrowser from "expo-web-browser"
 
 interface DecodedToken {
-  avatar: string;
-  name: string;
+  avatar: string
+  name: string
+  diamond: string
+  email: string
 }
-const StartGame = () => {
-  const token = localStorage.getItem("user") + "";
-  const { avatar, name } = jwtDecode<DecodedToken>(token);
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isModalDiamond, setModalDiamond] = useState(false);
-  const toggleModalDiamond = () => {
-    setModalDiamond(!isModalDiamond);
-  };
-  const toggleProfileEdit = () => {
-    setModalVisible(!isModalVisible);
-  };
 
+interface DiamondOption {
+  amount: number
+  image: string
+  price: number
+  id: string
+}
+
+interface AvatarOption {
+  secure_url: string
+  price: number
+  name: string
+  purchased: boolean
+  id: string
+}
+
+const StartGame = () => {
+  const token = localStorage.getItem("user") + ""
+  const { avatar, name, diamond } = jwtDecode<DecodedToken>(token)
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [isModalDiamond, setModalDiamond] = useState(false)
+  const [avatarUser, setAvatarUser] = useState({ avatar })
+  const [diamondOptions, setDiamondOptions] = useState<DiamondOption[]>([])
+  const [avatarOptions, setAvatarOptions] = useState<AvatarOption[]>([])
+  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(
+    null
+  )
+  const [selectedDiamond, setSelectedDiamond] = useState<DiamondOption | null>(
+    null
+  )
+  const initialUserDiamond = parseInt(diamond, 10)
+  const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
+  const toggleModalDiamond = () => {
+    setModalDiamond(!isModalDiamond)
+  }
+  const toggleProfileEdit = () => {
+    setModalVisible(!isModalVisible)
+  }
+
+  useEffect(() => {
+    const fetchDiamondOptions = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/diamonds")
+        setDiamondOptions(response.data.data)
+      } catch (error) {
+        console.error("Error fetching diamond options:", error)
+      }
+    }
+
+    fetchDiamondOptions()
+  }, [])
+
+  useEffect(() => {
+    const fetchAvatarOptions = async () => {
+      try {
+        const token = localStorage.getItem("user") || ""
+        const { email } = jwtDecode<DecodedToken>(token)
+        const userResponse = await axios.get(
+          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-user",
+          {
+            params: { email },
+            headers: { "ngrok-skip-browser-warning": "true" },
+          }
+        )
+        console.log("User Response:", userResponse)
+
+        const purchasedAvatars = userResponse.data.data.purchasedavatars
+        console.log("Purchased Avatars:", purchasedAvatars)
+
+        const avatarsResponse = await axios.get(
+          "http://localhost:8000/api/avatars"
+        )
+        const allAvatars = avatarsResponse.data.data
+
+        const updatedAvatarOptions = allAvatars.map((item: AvatarOption) => {
+          const isPurchased = purchasedAvatars.some(
+            (purchasedAvatar: AvatarOption) => purchasedAvatar.id === item.id
+          )
+          return {
+            ...item,
+            purchased: isPurchased,
+            price: isPurchased ? "Purchased" : item.price,
+          }
+        })
+
+        console.log("Updated Avatar Options:", updatedAvatarOptions)
+
+        setAvatarOptions(updatedAvatarOptions)
+
+        setAvatarUser({
+          ...avatarUser,
+          avatar: userResponse.data.data.avatar || "",
+        })
+
+        setUserDiamond(userResponse.data.data.diamond || 0)
+      } catch (error) {
+        console.error("Error fetching avatar options:", error)
+      }
+    }
+
+    fetchAvatarOptions()
+  }, [])
+
+  const handleBuyAvatar = async (selectedItem: AvatarOption | null) => {
+    if (selectedItem) {
+      console.log("Selected Avatar:", selectedItem)
+
+      const avatarPrice = selectedItem.price
+      console.log("Avatar price:", avatarPrice)
+      setAvatarOptions((prevOptions) =>
+        prevOptions.map((item) =>
+          item.secure_url === selectedItem.secure_url
+            ? { ...item, purchased: true }
+            : item
+        )
+      )
+
+      if (avatarPrice != null && userDiamond >= avatarPrice) {
+        try {
+          const name = selectedItem.name
+          console.log("AvatarName:", name)
+          const formData = new FormData()
+          formData.append("name", selectedItem.name)
+          console.log("Form Data:", formData)
+          const response = await axios.post(
+            "https://wondrous-moth-complete.ngrok-free.app/api/v1/buy-avatar",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+
+          console.log("Buy Avatar Response:", response.data)
+          const updateAvatarFormData = new FormData()
+          updateAvatarFormData.append("avatar", selectedItem.secure_url)
+          const responseUpdateAvatar = await axios.patch(
+            "https://wondrous-moth-complete.ngrok-free.app/api/v1/update-user",
+            updateAvatarFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+
+          console.log("Update Avatar Response:", responseUpdateAvatar.data)
+
+          const newToken = responseUpdateAvatar.data.data.token
+          console.log("New Token:", newToken)
+
+          await localStorage.setItem("user", newToken)
+          setUserDiamond((prevDiamond) => {
+            const newDiamond = prevDiamond - avatarPrice
+            return newDiamond
+          })
+          setAvatarUser({
+            ...avatarUser,
+            avatar: selectedItem.secure_url,
+          })
+          try {
+            await AsyncStorage.setItem("avatar", selectedItem.secure_url)
+            await AsyncStorage.setItem(
+              "diamond",
+              (userDiamond - avatarPrice).toString()
+            )
+          } catch (error) {
+            console.error("Error saving to AsyncStorage:", error)
+          }
+
+          toggleProfileEdit()
+        } catch (error) {
+          console.error("Error buying avatar:", error)
+        }
+      } else {
+        alert("Diamond not enough")
+      }
+    }
+  }
+
+  const handleBuyDiamond = async (obj: DiamondOption) => {
+    if (selectedDiamond) {
+      console.log("Selected Diamond:", selectedDiamond)
+    }
+    try {
+      const token = await AsyncStorage.getItem("user")
+      const response = await axios.post(
+        "https://wondrous-moth-complete.ngrok-free.app/api/v1/buy-diamond",
+        {
+          amount: obj.price,
+          item_id: obj.id,
+        },
+        {
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      )
+      console.log("Buy Diamond Response:", response.data)
+
+      WebBrowser.openBrowserAsync(response.data.data.url)
+      setModalDiamond(false)
+    } catch (err) {
+      console.log("Error Topup", err)
+    }
+  }
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -38,7 +241,7 @@ const StartGame = () => {
       <StatusBar style="auto" />
       <View style={styles.diamondContainer}>
         <View style={styles.diamondButton}>
-          <Text style={styles.diamondText}>20</Text>
+          <Text style={styles.diamondText}>{userDiamond}</Text>
         </View>
 
         <TouchableOpacity onPress={toggleModalDiamond}>
@@ -54,7 +257,7 @@ const StartGame = () => {
         />
       </View>
       <View>
-        <Image style={styles.avatar} source={{ uri: avatar || "" }} />
+        <Image style={styles.avatar} source={{ uri: avatarUser.avatar }} />
         <TouchableOpacity style={styles.edit} onPress={toggleProfileEdit}>
           <FaEdit />
         </TouchableOpacity>
@@ -85,69 +288,31 @@ const StartGame = () => {
             </TouchableOpacity>
 
             <View style={styles.modalDiamond}>
-              <View style={styles.rowContainer}>
-                <Text style={styles.listDiamond}>100</Text>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageDiamondPrice}
-                    source={require("../assets/Diamond1.png")}
-                  />
-                  <Text style={styles.PriceDiamond}>Rp. 16.000 </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.listDiamond}>250</Text>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageDiamondPrice}
-                    source={require("../assets/Diamond2.png")}
-                  />
-                  <Text style={styles.PriceDiamond}>Rp. 13.000 </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.listDiamond}>500</Text>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageDiamondPrice}
-                    source={require("../assets/Diamond3.png")}
-                  />
-                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.listDiamond}>1000</Text>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageDiamondPrice}
-                    source={require("../assets/Diamond4.png")}
-                  />
-                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.listDiamond}>5000</Text>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageDiamondPrice}
-                    source={require("../assets/Diamond5.png")}
-                  />
-                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.listDiamond}>10000</Text>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageDiamondPrice}
-                    source={require("../assets/Diamond6.png")}
-                  />
-                  <Text style={styles.PriceDiamond}>Rp. 516.000 </Text>
-                </TouchableOpacity>
-              </View>
+              {diamondOptions.map((option, amount) => (
+                <View key={amount} style={styles.rowContainer}>
+                  <Text style={styles.listDiamond}>{option.amount}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedDiamond(option)
+                      console.log("Selected Diamond:", option)
+                    }}
+                  >
+                    <Image
+                      style={styles.imageDiamondPrice}
+                      source={{ uri: option.image }}
+                    />
+                    <Text style={styles.PriceDiamond}>Rp. {option.price}</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
             </View>
             <View>
-              <TouchableOpacity style={styles.buttondiamond}>
+              <TouchableOpacity
+                style={styles.buttondiamond}
+                onPress={() =>
+                  selectedDiamond && handleBuyDiamond(selectedDiamond)
+                }
+              >
                 <Text style={styles.textdiamond}>Buy</Text>
               </TouchableOpacity>
             </View>
@@ -174,83 +339,40 @@ const StartGame = () => {
                 width={100}
               />
             </TouchableOpacity>
-
-            <View style={styles.modalAvatar}>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/avatar1.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>Free</Text>
-                </TouchableOpacity>
+            <ScrollView>
+              <View style={styles.modalAvatar}>
+                {avatarOptions.map((item) => (
+                  <View key={item.secure_url} style={styles.viewAvatar}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedAvatar(item)
+                        console.log(item)
+                      }}
+                    >
+                      {item.purchased && (
+                        <Text style={styles.purchasedText}>Purchased</Text>
+                      )}
+                      <Image
+                        style={styles.imageAvatar}
+                        source={{ uri: item.secure_url }}
+                      />
+                      <Text style={styles.priceDiamondAvatar}>
+                        {item.price === "Purchased"
+                          ? "Purchased"
+                          : item.price === 0
+                          ? "Free"
+                          : `${item.price} Diamond`}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
               </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/avatar2.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>Free</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/avatar3.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>Free</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/Vip1.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>
-                    25{" "}
-                    <Image
-                      style={styles.imageDiamond}
-                      source={require("../assets/diamond.png")}
-                    />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/Vip2.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>
-                    25{" "}
-                    <Image
-                      style={styles.imageDiamond}
-                      source={require("../assets/diamond.png")}
-                    />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.viewAvatar}>
-                <TouchableOpacity>
-                  <Image
-                    style={styles.imageAvatar}
-                    source={require("../assets/Vip3.png")}
-                  />
-                  <Text style={styles.priceDiamondAvatar}>
-                    25{" "}
-                    <Image
-                      style={styles.imageDiamond}
-                      source={require("../assets/diamond.png")}
-                    />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            </ScrollView>
             <View>
-              <TouchableOpacity style={styles.buttondiamond}>
+              <TouchableOpacity
+                style={styles.buttondiamond}
+                onPress={() => handleBuyAvatar(selectedAvatar)}
+              >
                 <Text style={styles.textdiamond}>Save</Text>
               </TouchableOpacity>
             </View>
@@ -259,10 +381,10 @@ const StartGame = () => {
       </Modal>
       <Image style={styles.artist} source={require("../assets/artist.png")} />
     </View>
-  );
-};
+  )
+}
 
-export default StartGame;
+export default StartGame
 
 const styles = StyleSheet.create({
   container: {
@@ -439,6 +561,7 @@ const styles = StyleSheet.create({
     height: 120,
     top: 2,
     right: 5,
+    scrollable: true,
   },
   PriceDiamond: {
     color: "white",
@@ -482,12 +605,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     marginTop: 20,
   },
+
   modalAvatar: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
     paddingHorizontal: 0,
     marginTop: 20,
+    // scrollable: true,
+    // height: 110,
   },
   buttondiamond: {
     display: "flex",
@@ -507,4 +633,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignContent: "center",
   },
-});
+  purchasedText: {
+    position: "absolute",
+    top: 5,
+    left: 5,
+    backgroundColor: "green",
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 12,
+    padding: 5,
+    borderRadius: 5,
+  },
+})
