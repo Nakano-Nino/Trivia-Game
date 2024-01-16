@@ -18,6 +18,7 @@ import axios from "axios"
 import { GiHidden } from "react-icons/gi"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as WebBrowser from "expo-web-browser"
+import { useNavigation } from "@react-navigation/native";
 
 interface DecodedToken {
   avatar: string
@@ -57,6 +58,7 @@ const StartGame = () => {
   )
   const initialUserDiamond = parseInt(diamond, 10)
   const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
+  const navigate = useNavigation();
   const toggleModalDiamond = () => {
     setModalDiamond(!isModalDiamond)
   }
@@ -264,7 +266,7 @@ const StartGame = () => {
         <Text style={styles.textup}>Hello, {name}</Text>
       </View>
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.text}>Play Game</Text>
+        <Text style={styles.text} onPress={() => navigate.navigate("Socket" as never)}>Play Game</Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"

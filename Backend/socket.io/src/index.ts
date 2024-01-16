@@ -4,10 +4,18 @@ import { Server } from 'socket.io';
 import { Player, PlayerAnswer } from '../interface/Player';
 import Question from '../interface/Question';
 import axios from 'axios';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
+
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+});
 
 let celebMinds = {
     players: [] as Player[],
@@ -18,8 +26,13 @@ let celebMinds = {
 
 async function getQuestions() {
     try {
-        const response = await axios.get('http://localhost:8000/api/questions');
-        celebMinds.questions = response.data;
+        const response = await axios.get(
+            "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-questions",
+            {
+              headers: { "ngrok-skip-browser-warning": "true" },
+            });
+        celebMinds.questions = response.data.data;
+        console.log(response.data.data);
     } catch (error) {
         console.error('Error fetching questions:', error);
     }
@@ -49,13 +62,13 @@ function startRound() {
                 endGame();
             }
         }, 5000);
-    }, 15000);
+    }, 5000);
 }
 
 function endGame() {
     const rankedPlayers = [...celebMinds.players].sort((a, b) => b.score - a.score);
     if (rankedPlayers.length > 0) {
-        rankedPlayers[0].diamonds = (rankedPlayers[0].diamonds || 0) + 1;
+        rankedPlayers[0].diamonds = (rankedPlayers[0].diamonds || 0) + 10;
     }
     io.emit('endGame', { rankedPlayers });
 
@@ -76,7 +89,7 @@ io.on('connection', (socket) => {
 
     socket.on('joinGame', (data) => {
         celebMinds.players.push({
-            id:socket.id,
+            id: socket.id,
             name: data.name,
             score: 0,
         });
@@ -101,7 +114,7 @@ io.on('connection', (socket) => {
                     console.error('Failed to fetch questions');
                     io.emit('error', { message: 'Failed to fetch questions' });
                 }
-            }, 30000);
+            }, 2000);
         }
 
         if (celebMinds.players.length === 4 && joinTimer) {
@@ -120,7 +133,7 @@ io.on('connection', (socket) => {
             if (player && currentQuestion) {
                 currentAnswers.push({ playerId: player.id, answer: data.answer });
                 if (data.answer === currentQuestion.answer) {
-                    player.score++;
+                    player.score += 1;
                 }
                 io.emit('scoreUpdate', celebMinds.players);
             }

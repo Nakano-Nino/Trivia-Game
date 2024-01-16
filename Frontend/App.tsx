@@ -10,6 +10,7 @@ import SplashScreen from "./pages/SplashScreen"
 import StartGame from "./pages/StartGame"
 
 import FindMatch from "./pages/FindMatch"
+import Socket from "./pages/Socket"
 // import { store } from "./redux/store";
 // import { Provider } from "react-redux";
 
@@ -45,6 +46,12 @@ const App = () => {
             component={FindMatch}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="Socket"
+            component={Socket}
+            options={{ headerShown: false }}
+          />
+
         </Stack.Navigator>
       </NavigationContainer>
       {/* </Provider> */}
