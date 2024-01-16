@@ -1,15 +1,31 @@
-import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+
+// import React from "react";
+// import { StatusBar } from "expo-status-bar";
+// import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+// import { TouchableOpacity } from "react-native-gesture-handler";
+// import * as WebBrowser from "expo-web-browser";
+// import * as Google from "expo-auth-session/providers/google";
+// import { useNavigation } from "@react-navigation/native";
+// import { useState } from "react";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import axios from "axios";
+// WebBrowser.maybeCompleteAuthSession();
+
 import LottieView from "lottie-react-native";
-WebBrowser.maybeCompleteAuthSession();
+import React, { useEffect } from "react"
+import { StatusBar } from "expo-status-bar"
+import { Image, Pressable, StyleSheet, Text, View } from "react-native"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import * as WebBrowser from "expo-web-browser"
+import * as Google from "expo-auth-session/providers/google"
+import { useNavigation } from "@react-navigation/native"
+import { useState } from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import axios from "axios"
+import { jwtDecode } from "jwt-decode"
+
+WebBrowser.maybeCompleteAuthSession()
+
 interface UserInfo {
   avatar?: string;
   email: string;
@@ -22,14 +38,22 @@ const LandingPage = () => {
   const config = {
     webClientId:
       "864096410384-9kj4i25qqqsr2vkhpkhg8m0qmurk9ah7.apps.googleusercontent.com",
-  };
-  const [request, response, promptAsync] = Google.useAuthRequest(config);
+    iosClientId:
+      "864096410384-pthhacedloa46b2u2b6da9qq8lkmbvr7.apps.googleusercontent.com",
+    androidClientId:
+      "864096410384-ikomdd616qrka0phht2co23k0jgpbu7q.apps.googleusercontent.com",
+  }
+  const [request, response, promptAsync] = Google.useAuthRequest(config)
 
   const getLocalUser = async () => {
     try {
-      const data = await AsyncStorage.getItem("user");
-      if (!data) return null;
-      return JSON.parse(data) as UserInfo;
+      const data = await AsyncStorage.getItem("user")
+      if (data != null) {
+        const newData = jwtDecode(data)
+        return newData as UserInfo
+      }
+
+      if (!data) return null
     } catch (error) {
       console.log("Error getting local user:", error);
       return null;
@@ -50,11 +74,20 @@ const LandingPage = () => {
         const email = user?.email;
 
         axios
-          .get("http://localhost:8000/api/v1/user", { params: { email } })
+          .get(
+            "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-user",
+            {
+              params: { email },
+              headers: { "ngrok-skip-browser-warning": "true" },
+            }
+          )
           .then((res) => {
             if (res.data.code == 404) {
               axios
-                .post("http://localhost:8000/api/v1/createUser", user)
+                .post(
+                  "https://wondrous-moth-complete.ngrok-free.app/api/v1/signup",
+                  user
+                )
                 .then((res) => {
                   console.log(res);
 
@@ -62,16 +95,28 @@ const LandingPage = () => {
                     localStorage.setItem(
                       "user",
                       JSON.stringify(res?.data?.data.token)
-                    );
-                    navigate.navigate("Profile" as never);
+                    )
+                    AsyncStorage.setItem(
+                      "user",
+                      JSON.stringify(res?.data?.data.token)
+                    )
+                    navigate.navigate("Profile" as never)
                   }
                 });
             } else {
-              localStorage.setItem(
-                "user",
-                JSON.stringify(res?.data?.data.token)
-              );
-              navigate.navigate("StartGame" as never);
+              axios
+                .post(
+                  "https://wondrous-moth-complete.ngrok-free.app/api/v1/login",
+                  { email: res.data.data.email },
+                  { headers: { "ngrok-skip-browser-warning": "true" } }
+                )
+
+                .then((res) => {
+                  console.log(res.data.data.token)
+
+                  localStorage.setItem("user", res.data.data.token)
+                  navigate.navigate("StartGame" as never)
+                })
             }
           })
           .catch((err) => {
@@ -79,9 +124,9 @@ const LandingPage = () => {
           });
       }
     } else {
-      console.log(user);
-      console.log("loaded locally");
-      navigate.navigate("Start" as never);
+      console.log(user)
+      console.log("loaded locally")
+      navigate.navigate("StartGame" as never)
     }
   };
 
@@ -107,6 +152,19 @@ const LandingPage = () => {
     }
   };
 
+  // useEffect(() => {
+  //   AsyncStorage.getItem("user")
+  // }, [])
+  useEffect(() => {
+    const checkUserSession = async () => {
+      const user = await getLocalUser()
+      if (user) {
+        navigate.navigate("StartGame" as never)
+      }
+    }
+
+    checkUserSession()
+  }, [])
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/background1.jpg")} />

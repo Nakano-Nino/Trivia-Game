@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("avatars", function (Blueprint $table){
-            $table->uuid("id")->primary();
-            $table->string("avatar");
-            $table->integer("price");
-            $table->timestamps();
-        });
+        // Schema::create("avatars", function (Blueprint $table){
+        //     $table->uuid("id")->primary();
+        //     $table->string("name");
+        //     $table->string("secure_url");
+        //     $table->integer("price");
+        //     $table->timestamps();
+        // });
 
         Schema::create("questions", function (Blueprint $table){
             $table->uuid("id")->primary();
@@ -35,7 +36,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('avatars');
+        // Schema::dropIfExists('avatars');
         Schema::dropIfExists('questions');
     }
 };

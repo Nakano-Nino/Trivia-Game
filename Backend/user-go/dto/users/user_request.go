@@ -9,8 +9,9 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-	Name   string `json:"name" form:"name"`
-	Avatar string `json:"picture" form:"avatar"`
+	Name    string `json:"name" form:"name"`
+	Avatar  string `json:"avatar" form:"avatar"`
+	Diamond int    `json:"diamond" form:"diamond"`
 }
 
 type GetUserRequest struct {
