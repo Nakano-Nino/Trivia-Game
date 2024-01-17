@@ -31,6 +31,10 @@ const StartGame = () => {
   const toggleProfileEdit = () => {
     setModalVisible(!isModalVisible);
   };
+  
+  //selected for diamond start
+  
+  //selected for diamond end
 
   return (
     <View style={styles.container}>
@@ -293,6 +297,11 @@ const StartGame = () => {
 };
 
 export default StartGame;
+const diamonds = [
+  { amount: 100, image: require("../assets/Diamond1.png"), price: "Rp. 16.000" },
+  { amount: 250, image: require("../assets/Diamond2.png"), price: "Rp. 13.000" },
+  // Add other diamond objects here
+];
 
 const styles = StyleSheet.create({
   container: {
