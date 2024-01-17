@@ -8,6 +8,7 @@ import "react-native-gesture-handler"
 import Profile from "./pages/Profile"
 import SplashScreen from "./pages/SplashScreen"
 import StartGame from "./pages/StartGame"
+
 import FindMatch from "./pages/FindMatch"
 import Question from "./pages/Question"
 import Podium from "./pages/Podium"
@@ -17,7 +18,7 @@ const Stack = createStackNavigator()
 const App = () => {
   return (
     <>
-    {/* <Provider store={store}> */}
+      {/* <Provider store={store}> */}
       <NavigationContainer>
         <Stack.Navigator initialRouteName="StartGame">
           <Stack.Screen

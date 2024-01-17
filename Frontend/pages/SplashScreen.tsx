@@ -11,8 +11,6 @@ const SplashScreen = () => {
     const timer = setTimeout(() => {
       navigation.navigate("LandingPage" as never)
     }, 1000)
-
-    // Membersihkan timer jika komponen di-unmount sebelum waktu 3 detik berlalu
     return () => clearTimeout(timer)
   }, [navigation])
   return (
