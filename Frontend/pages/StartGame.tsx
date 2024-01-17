@@ -277,11 +277,11 @@ const StartGame = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={styles.buttonClose}
               onPress={toggleModalDiamond}
             >
               <FontAwesome
-                style={styles.modalButtonText}
+                style={styles.buttonCloseText}
                 name="times"
                 size={24}
                 color="black"
@@ -330,11 +330,11 @@ const StartGame = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={styles.buttonClose}
               onPress={toggleProfileEdit}
             >
               <FontAwesome
-                style={styles.modalButtonText}
+                style={styles.buttonCloseText}
                 name="times"
                 size={24}
                 color="black"
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
 
     marginBottom: 20,
   },
-  modalButton: {
+  buttonClose: {
     padding: 1,
     backgroundColor: "red",
     borderRadius: 10,
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginLeft: 340,
   },
-  modalButtonText: {
+  buttonCloseText: {
     color: "black",
     fontWeight: "bold",
     fontSize: 26,
