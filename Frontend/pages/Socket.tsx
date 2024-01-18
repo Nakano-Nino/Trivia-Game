@@ -167,12 +167,12 @@ const Socket = () => {
   const renderPlayerList = () => (
     <FlatList
       data={players}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <Text style={styles.player}>
           {item.name}: {item.score} {item.diamonds ? "💎" : ""}
         </Text>
       )}
-      keyExtractor={(item) => item.id}
     />
   )
 

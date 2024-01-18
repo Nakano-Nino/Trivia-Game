@@ -1,3 +1,17 @@
+
+// import React from "react";
+// import { StatusBar } from "expo-status-bar";
+// import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+// import { TouchableOpacity } from "react-native-gesture-handler";
+// import * as WebBrowser from "expo-web-browser";
+// import * as Google from "expo-auth-session/providers/google";
+// import { useNavigation } from "@react-navigation/native";
+// import { useState } from "react";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import axios from "axios";
+// WebBrowser.maybeCompleteAuthSession();
+
+import LottieView from "lottie-react-native";
 import React, { useEffect } from "react"
 import { StatusBar } from "expo-status-bar"
 import { Image, Pressable, StyleSheet, Text, View } from "react-native"
@@ -11,6 +25,7 @@ import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 
 WebBrowser.maybeCompleteAuthSession()
+
 interface UserInfo {
   avatar?: string
   email: string
@@ -151,9 +166,17 @@ const LandingPage = () => {
   }, [])
   return (
     <View style={styles.container}>
-      <Image style={styles.background} source={require("../assets/bg1.png")} />
+      <Image style={styles.background} source={require("../assets/background1.jpg")} />
       <Image style={styles.logo1} source={require("../assets/logo1.png")} />
       <StatusBar style="auto" />
+      <View style={styles.lottieIcon}>
+      <LottieView
+        source={require("../assets/lottivew/welcome.json")}
+        
+        autoPlay
+        loop
+      />
+      </View>
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={handlePress} style={styles.button}>
           <Image style={styles.logo2} source={require("../assets/logo2.png")} />
@@ -181,7 +204,7 @@ const styles = StyleSheet.create({
     width: 400,
     height: 400,
     position: "relative",
-    marginTop: 180,
+    // marginTop: 180,
     marginRight: 20,
   },
   logo2: {
@@ -196,7 +219,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 50,
     borderRadius: 5,
-    marginTop: 10,
+    top: -50,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -208,4 +231,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 10,
   },
-})
+  lottieIcon: {
+    width: 400,
+    height: 400,
+    top: 100,
+    position: "relative",
+    marginTop: -180,
+    marginRight: 20,
+  },
+});
