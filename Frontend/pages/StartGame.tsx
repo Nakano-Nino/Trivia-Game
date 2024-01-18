@@ -7,19 +7,17 @@ import {
   Modal,
   ScrollView,
 } from "react-native"
-import Avatar from "../components/Avatar"
+
 import { StatusBar } from "expo-status-bar"
 import { FaEdit } from "react-icons/fa"
-import { IoDiamond } from "react-icons/io5"
 import React, { useEffect, useState } from "react"
 import { FontAwesome } from "@expo/vector-icons"
 import { jwtDecode } from "jwt-decode"
 import axios from "axios"
-import { GiHidden } from "react-icons/gi"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as WebBrowser from "expo-web-browser"
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation } from "@react-navigation/native"
+import { Alert } from "react-native"
 interface DecodedToken {
   avatar: string
   name: string
@@ -35,7 +33,7 @@ interface DiamondOption {
 }
 
 interface AvatarOption {
-  secure_url: string
+  secureurl: string
   price: number
   name: string
   purchased: boolean
@@ -58,7 +56,8 @@ const StartGame = () => {
   )
   const initialUserDiamond = parseInt(diamond, 10)
   const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
-  const navigate = useNavigation();
+  const navigate = useNavigation()
+
   const toggleModalDiamond = () => {
     setModalDiamond(!isModalDiamond)
   }
@@ -69,7 +68,11 @@ const StartGame = () => {
   useEffect(() => {
     const fetchDiamondOptions = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/diamonds")
+        const response = await axios.get(
+          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-diamonds",
+          { headers: { "ngrok-skip-browser-warning": "true" } }
+        )
+
         setDiamondOptions(response.data.data)
       } catch (error) {
         console.error("Error fetching diamond options:", error)
@@ -91,28 +94,28 @@ const StartGame = () => {
             headers: { "ngrok-skip-browser-warning": "true" },
           }
         )
-        console.log("User Response:", userResponse)
 
         const purchasedAvatars = userResponse.data.data.purchasedavatars
-        console.log("Purchased Avatars:", purchasedAvatars)
 
         const avatarsResponse = await axios.get(
-          "http://localhost:8000/api/avatars"
+          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-avatars",
+          { headers: { "ngrok-skip-browser-warning": "true" } }
         )
         const allAvatars = avatarsResponse.data.data
 
+        const purchasedAvatarIds = purchasedAvatars.map(
+          (purchasedAvatar: AvatarOption) => purchasedAvatar.id
+        )
+
         const updatedAvatarOptions = allAvatars.map((item: AvatarOption) => {
-          const isPurchased = purchasedAvatars.some(
-            (purchasedAvatar: AvatarOption) => purchasedAvatar.id === item.id
-          )
+          const isPurchased = purchasedAvatarIds.includes(item.id)
+          const price = isPurchased ? "Purchased" : item.price
           return {
             ...item,
             purchased: isPurchased,
-            price: isPurchased ? "Purchased" : item.price,
+            price,
           }
         })
-
-        console.log("Updated Avatar Options:", updatedAvatarOptions)
 
         setAvatarOptions(updatedAvatarOptions)
 
@@ -136,9 +139,10 @@ const StartGame = () => {
 
       const avatarPrice = selectedItem.price
       console.log("Avatar price:", avatarPrice)
+
       setAvatarOptions((prevOptions) =>
         prevOptions.map((item) =>
-          item.secure_url === selectedItem.secure_url
+          item.secureurl === selectedItem.secureurl
             ? { ...item, purchased: true }
             : item
         )
@@ -146,11 +150,8 @@ const StartGame = () => {
 
       if (avatarPrice != null && userDiamond >= avatarPrice) {
         try {
-          const name = selectedItem.name
-          console.log("AvatarName:", name)
           const formData = new FormData()
           formData.append("name", selectedItem.name)
-          console.log("Form Data:", formData)
           const response = await axios.post(
             "https://wondrous-moth-complete.ngrok-free.app/api/v1/buy-avatar",
             formData,
@@ -161,10 +162,10 @@ const StartGame = () => {
               },
             }
           )
+          console.log("Response:", response)
 
-          console.log("Buy Avatar Response:", response.data)
           const updateAvatarFormData = new FormData()
-          updateAvatarFormData.append("avatar", selectedItem.secure_url)
+          updateAvatarFormData.append("avatar", selectedItem.secureurl)
           const responseUpdateAvatar = await axios.patch(
             "https://wondrous-moth-complete.ngrok-free.app/api/v1/update-user",
             updateAvatarFormData,
@@ -176,10 +177,7 @@ const StartGame = () => {
             }
           )
 
-          console.log("Update Avatar Response:", responseUpdateAvatar.data)
-
           const newToken = responseUpdateAvatar.data.data.token
-          console.log("New Token:", newToken)
 
           await localStorage.setItem("user", newToken)
           setUserDiamond((prevDiamond) => {
@@ -188,10 +186,11 @@ const StartGame = () => {
           })
           setAvatarUser({
             ...avatarUser,
-            avatar: selectedItem.secure_url,
+            avatar: selectedItem.secureurl,
           })
+
           try {
-            await AsyncStorage.setItem("avatar", selectedItem.secure_url)
+            await AsyncStorage.setItem("avatar", selectedItem.secureurl)
             await AsyncStorage.setItem(
               "diamond",
               (userDiamond - avatarPrice).toString()
@@ -205,7 +204,7 @@ const StartGame = () => {
           console.error("Error buying avatar:", error)
         }
       } else {
-        alert("Diamond not enough")
+        Alert.alert("Error", "Diamond not enough")
       }
     }
   }
@@ -236,6 +235,7 @@ const StartGame = () => {
       console.log("Error Topup", err)
     }
   }
+
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -266,7 +266,12 @@ const StartGame = () => {
         <Text style={styles.textup}>Hello, {name}</Text>
       </View>
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.text} onPress={() => navigate.navigate("Socket" as never)}>Play Game</Text>
+        <Text
+          style={styles.text}
+          onPress={() => navigate.navigate("Socket" as never)}
+        >
+          Play Game
+        </Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -344,26 +349,23 @@ const StartGame = () => {
             <ScrollView>
               <View style={styles.modalAvatar}>
                 {avatarOptions.map((item) => (
-                  <View key={item.secure_url} style={styles.viewAvatar}>
+                  <View key={item.secureurl} style={styles.viewAvatar}>
                     <TouchableOpacity
                       onPress={() => {
                         setSelectedAvatar(item)
                         console.log(item)
                       }}
                     >
-                      {item.purchased && (
-                        <Text style={styles.purchasedText}>Purchased</Text>
-                      )}
                       <Image
                         style={styles.imageAvatar}
-                        source={{ uri: item.secure_url }}
+                        source={{ uri: item.secureurl }}
                       />
                       <Text style={styles.priceDiamondAvatar}>
                         {item.price === "Purchased"
                           ? "Purchased"
                           : item.price === 0
                           ? "Free"
-                          : `${item.price} Diamond`}
+                          : `${item.price} 💎`}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -408,7 +410,6 @@ const styles = StyleSheet.create({
     marginRight: 200,
   },
 
-  //set diamond start
   diamondContainer: {
     position: "absolute",
     top: 20,
@@ -637,7 +638,7 @@ const styles = StyleSheet.create({
   },
   purchasedText: {
     position: "absolute",
-    top: 5,
+    top: 1,
     left: 5,
     backgroundColor: "green",
     color: "white",
@@ -645,5 +646,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     padding: 5,
     borderRadius: 5,
+    zIndex: 100,
   },
 })
