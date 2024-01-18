@@ -51,6 +51,7 @@ const Socket = () => {
               if (player.id === socket.id) { // Assuming the player's ID matches the socket ID
                 return { ...player, score: player.score + 1 }; // Update score
               }
+              console.log(player.score, "ini score")
               return player;
             })
           );
@@ -84,7 +85,7 @@ const Socket = () => {
     const newSocket = io('http://localhost:5000');
     setSocket(newSocket);
     // Emit an event to the server to join the game
-    newSocket.emit('joinGame', { name: 'PlayerName' }); // Replace with actual player name or ID
+    newSocket.emit('joinGame', { name: 'Nandy' }); // Replace with actual player name or ID
   };
 
   const handleAnswer = (answer: string) => {
@@ -111,7 +112,7 @@ const Socket = () => {
       {['A', 'B', 'C', 'D'].map((option) => (
         <Button
           key={option}
-          title={currentQuestion[option]}
+          title={currentQuestion[option as keyof Question]}
           onPress={() => handleAnswer(option)}
           color={selectedAnswer === option ? 'blue' : '#f0f0f0'}
           disabled={!!selectedAnswer}
@@ -137,12 +138,12 @@ const Socket = () => {
   const renderPlayerList = () => (
     <FlatList
       data={players}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <Text style={styles.player}>
-          {item.name}: {item.score} {item.diamonds ? '💎' : ''}
+          {item.name} - Score: {item.score} {item.diamonds ? '10 💎' : ''}
         </Text>
       )}
-      keyExtractor={(item) => item.id}
     />
   );
 
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     // },
     questionImage: {
       width: '100%', // Adjust width as needed
-      height: 200, // Adjust height as needed
+      height: 300, // Adjust height as needed
       marginBottom: 20,
     },
     answerResult: {
