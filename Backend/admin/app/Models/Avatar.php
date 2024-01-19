@@ -11,7 +11,8 @@ class Avatar extends Model
 {
     use HasFactory, Notifiable, HasUuids;
     protected $fillable = [
-        'avatar',
+        'name',
+        'secure_url',
         'price',
     ];
 

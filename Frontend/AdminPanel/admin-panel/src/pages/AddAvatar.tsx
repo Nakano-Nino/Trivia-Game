@@ -3,10 +3,9 @@ import React from "react"
 import { Box } from "@chakra-ui/react"
 
 import HeaderPanel from "../components/Header"
-import FormUpload from "./FormUpload"
+import FormAvatar from "./FormAvatar"
 const AddAvatar: React.FC = () => {
   const handleCreate = (data: any) => {
-    // Lakukan apa yang diperlukan ketika data dibuat
     console.log("Data created:", data)
   }
   return (
@@ -17,7 +16,7 @@ const AddAvatar: React.FC = () => {
       />
       <div className="flex container" style={{ flexDirection: "row" }}>
         <Box className="justify-center">
-          <FormUpload onCreate={handleCreate} />
+          <FormAvatar onCreate={handleCreate} />
         </Box>
       </div>
     </Box>

@@ -1,16 +1,30 @@
-import React, { useEffect } from "react"
-import { StatusBar } from "expo-status-bar"
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import * as WebBrowser from "expo-web-browser"
-import * as Google from "expo-auth-session/providers/google"
-import { useNavigation } from "@react-navigation/native"
-import { useState } from "react"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import axios from "axios"
-import { jwtDecode } from "jwt-decode"
+// import React from "react";
+// import { StatusBar } from "expo-status-bar";
+// import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+// import { TouchableOpacity } from "react-native-gesture-handler";
+// import * as WebBrowser from "expo-web-browser";
+// import * as Google from "expo-auth-session/providers/google";
+// import { useNavigation } from "@react-navigation/native";
+// import { useState } from "react";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import axios from "axios";
+// WebBrowser.maybeCompleteAuthSession();
 
-WebBrowser.maybeCompleteAuthSession()
+import LottieView from "lottie-react-native";
+import React, { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
+WebBrowser.maybeCompleteAuthSession();
+
 interface UserInfo {
   avatar?: string;
   email: string;
@@ -27,18 +41,18 @@ const LandingPage = () => {
       "864096410384-pthhacedloa46b2u2b6da9qq8lkmbvr7.apps.googleusercontent.com",
     androidClientId:
       "864096410384-ikomdd616qrka0phht2co23k0jgpbu7q.apps.googleusercontent.com",
-  }
-  const [request, response, promptAsync] = Google.useAuthRequest(config)
+  };
+  const [request, response, promptAsync] = Google.useAuthRequest(config);
 
   const getLocalUser = async () => {
     try {
-      const data = await AsyncStorage.getItem("user")
+      const data = await AsyncStorage.getItem("user");
       if (data != null) {
-        const newData = jwtDecode(data)
-        return newData as UserInfo
+        const newData = jwtDecode(data);
+        return newData as UserInfo;
       }
 
-      if (!data) return null
+      if (!data) return null;
     } catch (error) {
       console.log("Error getting local user:", error);
       return null;
@@ -80,12 +94,12 @@ const LandingPage = () => {
                     localStorage.setItem(
                       "user",
                       JSON.stringify(res?.data?.data.token)
-                    )
+                    );
                     AsyncStorage.setItem(
                       "user",
                       JSON.stringify(res?.data?.data.token)
-                    )
-                    navigate.navigate("Profile" as never)
+                    );
+                    navigate.navigate("Profile" as never);
                   }
                 });
             } else {
@@ -97,11 +111,11 @@ const LandingPage = () => {
                 )
 
                 .then((res) => {
-                  console.log(res.data.data.token)
+                  console.log(res.data.data.token);
 
-                  localStorage.setItem("user", res.data.data.token)
-                  navigate.navigate("StartGame" as never)
-                })
+                  localStorage.setItem("user", res.data.data.token);
+                  navigate.navigate("StartGame" as never);
+                });
             }
           })
           .catch((err) => {
@@ -109,9 +123,8 @@ const LandingPage = () => {
           });
       }
     } else {
-      console.log(user)
-      console.log("loaded locally")
-      navigate.navigate("StartGame" as never)
+      console.log(user);
+      navigate.navigate("StartGame" as never);
     }
   };
 
@@ -142,22 +155,44 @@ const LandingPage = () => {
   // }, [])
   useEffect(() => {
     const checkUserSession = async () => {
-      const user = await getLocalUser()
+      const user = await getLocalUser();
       if (user) {
-        navigate.navigate("StartGame" as never)
+        navigate.navigate("StartGame" as never);
       }
-    }
+    };
 
-    checkUserSession()
-  }, [])
+    checkUserSession();
+  }, []);
   return (
     <View style={styles.container}>
-      <Image style={styles.background} source={require("../assets/bg1.png")} />
+      <Image
+        style={styles.background}
+        source={require("../assets/background1.jpg")}
+      />
       <Image style={styles.logo1} source={require("../assets/logo1.png")} />
       <StatusBar style="auto" />
+      <View style={styles.lottieIcon}>
+        <LottieView
+          source={require("../assets/lottivew/welcome.json")}
+          autoPlay
+          loop
+        />
+      </View>
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={handlePress} style={styles.button}>
-          <Image style={styles.logo2} source={require("../assets/logo2.png")} />
+      <View
+        style={{
+          backgroundColor: "white",
+          borderRadius: 5,
+          // flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          width:40,
+          height: 40,
+        }}
+      >
+        <Image style={styles.logo2} source={require("../assets/logo2.png")} />
+      </View>
           <Text style={styles.text}>Continue with Google</Text>
         </TouchableOpacity>
       </View>
@@ -182,14 +217,14 @@ const styles = StyleSheet.create({
     width: 400,
     height: 400,
     position: "relative",
-    marginTop: 180,
+    // marginTop: 180,
     marginRight: 20,
   },
   logo2: {
     width: 30,
     height: 30,
-    marginLeft: 10,
-    backgroundColor: "white",
+    // marginLeft: 10,
+    // backgroundColor: "white",
   },
   button: {
     backgroundColor: "#3081D0",
@@ -197,7 +232,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 50,
     borderRadius: 5,
-    marginTop: 10,
+    // top: -50,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -207,6 +242,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     alignItems: "center",
-    marginLeft: 10,
+    marginLeft: 15,
+  },
+  lottieIcon: {
+    width: 400,
+    height: 400,
+    top: 100,
+    position: "relative",
+    marginTop: -180,
+    marginRight: 20,
   },
 });
