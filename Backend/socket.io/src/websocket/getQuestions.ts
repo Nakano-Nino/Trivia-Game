@@ -1,5 +1,4 @@
 import { Server, Socket } from "socket.io";
-import { API } from "../lib/API";
 import { IQuest } from "../interface/IQuest";
 import { lobbies } from "./lobby";
 
@@ -10,7 +9,6 @@ export default async function getQuestions(io: Server, socket:  Socket) {
                 lobbies.room_1.isEmited = true;
                 lobbies.room_1.isFinished = false;
                 const index = message.index;
-                console.log(lobbies.room_1.questions[+index]);
 
                 if (message.index == lobbies.room_1.questions.length) {
                     lobbies.room_1.isEmited = false;

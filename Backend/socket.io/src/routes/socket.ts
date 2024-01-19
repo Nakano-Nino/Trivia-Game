@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import getQuestions from "../websocket/getQuestions";
 import user from "../websocket/user";
-import lobby, { lobbies } from "../websocket/lobby";
+import lobby from "../websocket/lobby";
 
 export default async function routeSocket(io: Server, socket: Socket) {
     await getQuestions(io, socket);

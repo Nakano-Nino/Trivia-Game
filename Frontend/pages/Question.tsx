@@ -3,16 +3,43 @@ import { Image, View, StyleSheet, TouchableOpacity, Text } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import { GrTrophy } from "react-icons/gr"
 import LottieView from "lottie-react-native"
+
+// socket client
+import { socket } from "../utils/socket"
+import { useNavigation } from "@react-navigation/native"
 import { jwtDecode } from "jwt-decode"
 import { io } from "socket.io-client"
-import { Socket } from "socket.io-client"
-
+interface Question {
+  id: string
+  image_question: string
+  A: string
+  B: string
+  C: string
+  D: string
+  answer: string
+  time: number
+}
 interface DecodedToken {
   id: string
   name: string
+  avatar: string
 }
 const Question = () => {
-  const [socket, setSocket] = useState<Socket | null>(null)
+  const [data, setData] = useState<Question>({
+    id: "",
+    image_question: "",
+    A: "",
+    B: "",
+    C: "",
+    D: "",
+    answer: "",
+    time: 0,
+  })
+  const [index, setIndex] = useState(0)
+  const navigate = useNavigation()
+  const [socket, setSocket] = useState<any>(null)
+  const [timer, setTimer] = useState(0)
+  // untuk select jawaban dan warna background berubah start
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const handlePress = (option: number) => {
     setSelectedOption(option)
@@ -45,14 +72,14 @@ const Question = () => {
         // Update UI or perform any necessary actions
       })
 
-      socket.on("question", (question) => {
+      socket.on("question", (question: any) => {
         // Handle receiving questions event
         setCorrectAnswer(question.answer)
         setTimer(15)
         setSelectedOption(null)
       })
 
-      socket.on("endGame", (data) => {
+      socket.on("endGame", (data: any) => {
         // Handle end game event
         // Update UI or perform any necessary actions
       })
@@ -74,21 +101,40 @@ const Question = () => {
   // untuk select jawaban dan warna background berubah start
 
   //timer for the question start
-  const [timer, setTimer] = useState(15)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer > 0) {
-          return prevTimer - 1
-        } else {
-          clearInterval(interval) // Stop the interval when the timer reaches 0
-          return 0
-        }
-      })
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
+  // const [timer, setTimer] = useState(15)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTimer((prevTimer) => {
+  //       if (prevTimer > 0) {
+  //         return prevTimer - 1
+  //       } else {
+  //         clearInterval(interval) // Stop the interval when the timer reaches 0
+  //         return 0
+  //       }
+  //     })
+  //   }, 1000)
+  //   return () => clearInterval(interval)
+  // }, [])
   //timer for the question end
+
+  // socket
+  useEffect(() => {
+    if (data.time == 0) {
+      setIndex((prev) => prev + 1)
+      socket.emit("getQuest", { index: index + 1 })
+    }
+  }, [data.time])
+
+  useEffect(() => {
+    socket.emit("joinLobby", { name: "Nandy", avatar: "bit.ly/dan-abramov" })
+
+    socket.on("getQuest", (data: any) => {
+      if (data == false) {
+        navigate.navigate("Podium" as never)
+      }
+      setData(data)
+    })
+  }, [])
 
   const isCorrect = selectedOption === correctAnswer
   return (
@@ -129,7 +175,8 @@ const Question = () => {
           color: "white",
         }}
       >
-        {timer < 10 ? `0${timer}` : timer}
+        {/* {timer < 10 ? `0${timer}` : timer} */}
+        {data.time}
       </Text>
       <View
         style={{
@@ -141,7 +188,7 @@ const Question = () => {
       >
         <Image
           style={styles.imageQuestion}
-          source={require("../assets/content1.jpeg")}
+          source={{ uri: data.image_question }}
         />
         <TouchableOpacity onPress={() => handlePress(1)}>
           <View
@@ -152,7 +199,7 @@ const Question = () => {
                 : null,
             ]}
           >
-            <Text style={styles.nameQuestion}>lee min gooo</Text>
+            <Text style={styles.nameQuestion}>{data.A}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handlePress(2)}>
@@ -164,7 +211,7 @@ const Question = () => {
                 : null,
             ]}
           >
-            <Text style={styles.nameQuestion}>lee min gooo</Text>
+            <Text style={styles.nameQuestion}>{data.B}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handlePress(3)}>
@@ -176,7 +223,7 @@ const Question = () => {
                 : null,
             ]}
           >
-            <Text style={styles.nameQuestion}>lee min gooo</Text>
+            <Text style={styles.nameQuestion}>{data.C}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handlePress(4)}>
@@ -188,7 +235,7 @@ const Question = () => {
                 : null,
             ]}
           >
-            <Text style={styles.nameQuestion}>lee min gooo</Text>
+            <Text style={styles.nameQuestion}>{data.D}</Text>
           </View>
         </TouchableOpacity>
       </View>
