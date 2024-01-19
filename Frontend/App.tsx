@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from "react"
-import { NavigationContainer } from "@react-navigation/native"
-import { createStackNavigator } from "@react-navigation/stack"
-import { StatusBar } from "expo-status-bar"
-import { StyleSheet, Text, View } from "react-native"
-import LandingPage from "./pages/LandingPage"
-import "react-native-gesture-handler"
-import Profile from "./pages/Profile"
-import SplashScreen from "./pages/SplashScreen"
-import StartGame from "./pages/StartGame"
+import React, { useEffect, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import LandingPage from "./pages/LandingPage";
+import "react-native-gesture-handler";
+import Profile from "./pages/Profile";
+import SplashScreen from "./pages/SplashScreen";
+import StartGame from "./pages/StartGame";
 
-import FindMatch from "./pages/FindMatch"
-import Question from "./pages/Question"
-import Podium from "./pages/Podium"
+import FindMatch from "./pages/FindMatch";
+import Question from "./pages/Question";
+import Podium from "./pages/Podium";
 // import { store } from "./redux/store";
 // import { Provider } from "react-redux";
-const Stack = createStackNavigator()
+const Stack = createStackNavigator();
 const App = () => {
   return (
     <>
       {/* <Provider store={store}> */}
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="StartGame">
+        <Stack.Navigator initialRouteName="LandingPage">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -56,13 +56,12 @@ const App = () => {
             component={Podium}
             options={{ headerShown: false }}
           />
-
         </Stack.Navigator>
       </NavigationContainer>
       {/* </Provider> */}
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -71,5 +70,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-})
-export default App
+});
+export default App;

@@ -1,4 +1,3 @@
-
 // import React from "react";
 // import { StatusBar } from "expo-status-bar";
 // import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,29 +11,29 @@
 // WebBrowser.maybeCompleteAuthSession();
 
 import LottieView from "lottie-react-native";
-import React, { useEffect } from "react"
-import { StatusBar } from "expo-status-bar"
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import * as WebBrowser from "expo-web-browser"
-import * as Google from "expo-auth-session/providers/google"
-import { useNavigation } from "@react-navigation/native"
-import { useState } from "react"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import axios from "axios"
-import { jwtDecode } from "jwt-decode"
+import React, { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-WebBrowser.maybeCompleteAuthSession()
+WebBrowser.maybeCompleteAuthSession();
 
 interface UserInfo {
-  avatar?: string
-  email: string
-  name: string
+  avatar?: string;
+  email: string;
+  name: string;
 }
 
 const LandingPage = () => {
-  const [authInProgress, setAuthInProgress] = useState(false)
-  const navigate = useNavigation()
+  const [authInProgress, setAuthInProgress] = useState(false);
+  const navigate = useNavigation();
   const config = {
     webClientId:
       "864096410384-9kj4i25qqqsr2vkhpkhg8m0qmurk9ah7.apps.googleusercontent.com",
@@ -42,36 +41,36 @@ const LandingPage = () => {
       "864096410384-pthhacedloa46b2u2b6da9qq8lkmbvr7.apps.googleusercontent.com",
     androidClientId:
       "864096410384-ikomdd616qrka0phht2co23k0jgpbu7q.apps.googleusercontent.com",
-  }
-  const [request, response, promptAsync] = Google.useAuthRequest(config)
+  };
+  const [request, response, promptAsync] = Google.useAuthRequest(config);
 
   const getLocalUser = async () => {
     try {
-      const data = await AsyncStorage.getItem("user")
+      const data = await AsyncStorage.getItem("user");
       if (data != null) {
-        const newData = jwtDecode(data)
-        return newData as UserInfo
+        const newData = jwtDecode(data);
+        return newData as UserInfo;
       }
 
-      if (!data) return null
+      if (!data) return null;
     } catch (error) {
-      console.log("Error getting local user:", error)
-      return null
+      console.log("Error getting local user:", error);
+      return null;
     }
-  }
+  };
 
   const handlePress = async () => {
-    const user = await getLocalUser()
+    const user = await getLocalUser();
 
     if (!user) {
-      setAuthInProgress(true)
-      const result = await promptAsync()
+      setAuthInProgress(true);
+      const result = await promptAsync();
       if (result.type == "success") {
         const user = await getUserInfo(
           result?.authentication?.accessToken || ""
-        )
+        );
 
-        const email = user?.email
+        const email = user?.email;
 
         axios
           .get(
@@ -89,20 +88,20 @@ const LandingPage = () => {
                   user
                 )
                 .then((res) => {
-                  console.log(res)
+                  console.log(res);
 
                   if (res.data.code == 200) {
                     localStorage.setItem(
                       "user",
                       JSON.stringify(res?.data?.data.token)
-                    )
+                    );
                     AsyncStorage.setItem(
                       "user",
                       JSON.stringify(res?.data?.data.token)
-                    )
-                    navigate.navigate("Profile" as never)
+                    );
+                    navigate.navigate("Profile" as never);
                   }
-                })
+                });
             } else {
               axios
                 .post(
@@ -112,81 +111,95 @@ const LandingPage = () => {
                 )
 
                 .then((res) => {
-                  console.log(res.data.data.token)
+                  console.log(res.data.data.token);
 
-                  localStorage.setItem("user", res.data.data.token)
-                  navigate.navigate("StartGame" as never)
-                })
+                  localStorage.setItem("user", res.data.data.token);
+                  navigate.navigate("StartGame" as never);
+                });
             }
           })
           .catch((err) => {
-            console.log(err)
-          })
+            console.log(err);
+          });
       }
     } else {
-      console.log(user)
-      navigate.navigate("StartGame" as never)
+      console.log(user);
+      navigate.navigate("StartGame" as never);
     }
-  }
+  };
 
   const getUserInfo = async (token: string) => {
-    if (!token) return
+    if (!token) return;
     try {
       const response = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      )
+      );
 
-      const user = await response.json()
+      const user = await response.json();
 
-      return user
+      return user;
 
       // await AsyncStorage.setItem("user", JSON.stringify(user));
       // setAuthInProgress(false);
     } catch (error) {
-      console.log("Error fetching user info:", error)
-      setAuthInProgress(false)
+      console.log("Error fetching user info:", error);
+      setAuthInProgress(false);
     }
-  }
+  };
 
   // useEffect(() => {
   //   AsyncStorage.getItem("user")
   // }, [])
   useEffect(() => {
     const checkUserSession = async () => {
-      const user = await getLocalUser()
+      const user = await getLocalUser();
       if (user) {
-        navigate.navigate("StartGame" as never)
+        navigate.navigate("StartGame" as never);
       }
-    }
+    };
 
-    checkUserSession()
-  }, [])
+    checkUserSession();
+  }, []);
   return (
     <View style={styles.container}>
-      <Image style={styles.background} source={require("../assets/background1.jpg")} />
+      <Image
+        style={styles.background}
+        source={require("../assets/background1.jpg")}
+      />
       <Image style={styles.logo1} source={require("../assets/logo1.png")} />
       <StatusBar style="auto" />
       <View style={styles.lottieIcon}>
-      <LottieView
-        source={require("../assets/lottivew/welcome.json")}
-        
-        autoPlay
-        loop
-      />
+        <LottieView
+          source={require("../assets/lottivew/welcome.json")}
+          autoPlay
+          loop
+        />
       </View>
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={handlePress} style={styles.button}>
-          <Image style={styles.logo2} source={require("../assets/logo2.png")} />
+      <View
+        style={{
+          backgroundColor: "white",
+          borderRadius: 5,
+          // flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          width:40,
+          height: 40,
+        }}
+      >
+        <Image style={styles.logo2} source={require("../assets/logo2.png")} />
+      </View>
           <Text style={styles.text}>Continue with Google</Text>
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
-export default LandingPage
+  );
+};
+export default LandingPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -210,8 +223,8 @@ const styles = StyleSheet.create({
   logo2: {
     width: 30,
     height: 30,
-    marginLeft: 10,
-    backgroundColor: "white",
+    // marginLeft: 10,
+    // backgroundColor: "white",
   },
   button: {
     backgroundColor: "#3081D0",
@@ -219,7 +232,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 50,
     borderRadius: 5,
-    top: -50,
+    // top: -50,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -229,7 +242,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     alignItems: "center",
-    marginLeft: 10,
+    marginLeft: 15,
   },
   lottieIcon: {
     width: 400,
