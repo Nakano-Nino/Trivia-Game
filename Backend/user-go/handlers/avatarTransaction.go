@@ -9,6 +9,7 @@ import (
 	"github.com/Nakano-Nino/Trivia-Game/repositories/avatar"
 	"github.com/Nakano-Nino/Trivia-Game/repositories/users"
 	"github.com/golang-jwt/jwt/v5"
+	// "github.com/google/uuid"
 )
 
 type avatarHandler struct {
@@ -27,12 +28,36 @@ func HandlerUser(UserRepository users.UserRepository) *userHandler {
 	return &userHandler{UserRepository}
 }
 
+func (h *avatarHandler) FindAvatars(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	avatars, err := h.AvatarRepository.FindAvatars()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: avatars}
+	json.NewEncoder(w).Encode(response)
+}
+
 func (h *avatarHandler) BuyAvatar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	avatarName := r.FormValue("avatarName")
+	name := r.FormValue("name")
 
-	avatar, err := h.AvatarRepository.GetAvatar(avatarName)
+	// uuid, err := uuid.Parse(id)
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
+
+	avatar, err := h.AvatarRepository.GetAvatar(name)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -51,8 +76,8 @@ func (h *avatarHandler) BuyAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, purchasedAvatar := range user.PurchasedAvatars {
-		if purchasedAvatar.ID == avatar.ID {
+	for _, v := range user.PurchasedAvatars {
+		if v.ID == avatar.ID {
 			w.WriteHeader(http.StatusBadRequest)
 			response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "Already purchased"}
 			json.NewEncoder(w).Encode(response)
