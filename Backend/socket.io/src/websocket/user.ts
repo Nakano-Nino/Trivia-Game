@@ -1,15 +1,18 @@
 import { Server, Socket } from "socket.io";
+import { lobbies } from "./lobby";
 
 export default async function user(io:Server, socket:Socket) {
-    const user = {
-        name: "",
-        score: 0,
-    };
-
+    
     socket.on('user', message => {
-        user.name = message.name;
-        user.score += message.score;
+        const users = lobbies.room_1.users.map( user => {
+            if (socket.id == user.id) {
+                user.score += message.score;
+            }
+            return user;
+        });
 
-        socket.emit('user', user);
-    });
+        lobbies.room_1.users = [...new Set(users)];
+
+        socket.emit('user', lobbies.room_1.users);
+    })
 }

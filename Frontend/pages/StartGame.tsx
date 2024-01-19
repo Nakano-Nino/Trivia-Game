@@ -18,6 +18,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as WebBrowser from "expo-web-browser"
 import { useNavigation } from "@react-navigation/native"
 import { Alert } from "react-native"
+
+
 interface DecodedToken {
   avatar: string
   name: string
@@ -56,6 +58,7 @@ const StartGame = () => {
   )
   const initialUserDiamond = parseInt(diamond, 10)
   const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
+
   const navigate = useNavigation()
 
   const toggleModalDiamond = () => {
@@ -268,7 +271,7 @@ const StartGame = () => {
       <TouchableOpacity style={styles.button}>
         <Text
           style={styles.text}
-          onPress={() => navigate.navigate("Socket" as never)}
+          onPress={() => navigate.navigate("FindMatch" as never)}
         >
           Play Game
         </Text>

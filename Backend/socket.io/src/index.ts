@@ -9,9 +9,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        allowedHeaders: ['Content-Type'],
-        origin: '*',
-        methods: ['GET', 'POST']
+        allowedHeaders: ['Access-Control-Allow-Origin'],
     },
 });
 

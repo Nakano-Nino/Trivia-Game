@@ -8,49 +8,109 @@ import {
   View,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { FaEdit } from "react-icons/fa";
 import { useNavigation, NavigationProp  } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-const dummyData = [
-  { id: 1, avatar: require("../assets/avatar1.png"), name: "Guru Besar" },
-  { id: 2, avatar: require("../assets/avatar2.png"), name: "Maell Lee" },
-  { id: 3, avatar: require("../assets/avatar3.png"), name: "Yuda Prasetio" },
-  { id: 4, avatar: require("../assets/avatar4.png"), name: "Bambang" },
-];
+import { jwtDecode } from "jwt-decode";
+
+// socket client
+import { socket } from "../utils/socket";
+import { FlatList } from "react-native-gesture-handler";
+
 type YourNavWigatorProps = {
   // Define your navigation stack properties here
   // For example:
   FindMatch: undefined;
   Question: undefined;
 };
+
+interface DecodedToken {
+  avatar: string
+  name: string
+  diamond: string
+  email: string
+}
+
 const FindMatch = () => {
-  const navigation = useNavigation<StackNavigationProp<YourNavWigatorProps>>();
+  const navigate = useNavigation();
+
+  // get user info
+  const token = localStorage.getItem("user") + "";
+  const { avatar, name } = jwtDecode<DecodedToken>(token);
 
 
   //timer for the question start
-  const [timer, setTimer] = useState(15); 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer > 0) {
-          return prevTimer - 1;
-        } else {
-          clearInterval(interval); // Stop the interval when the timer reaches 0
-          return 0;
-        }
-      });
-    }, 1000);
+  // const [timer, setTimer] = useState(15); 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTimer((prevTimer) => {
+  //       if (prevTimer > 0) {
+  //         return prevTimer - 1;
+  //       } else {
+  //         clearInterval(interval); // Stop the interval when the timer reaches 0
+  //         return 0;
+  //       }
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
  //timer for the question end
 
- useEffect(() => {
-  if (timer === 0) {
-    navigation.navigate("Question");
-  }
-}, [timer, navigation]);
+//  useEffect(() => {
+//   if (timer === 0) {
+//     navigation.navigate("Question");
+//   }
+// }, [timer, navigation]);
 
+// socket options
+const [data, setData] = useState<{name: string, avatar:string, id: string}[]>([])
+const [time, setTime] = useState(10)
+
+useEffect(() => {
+  if (name !== '') {
+    socket.emit('joinLobby', {
+      name: name,
+      avatar: avatar
+    })
+
+    socket.on('joinLobby', (user, timeout) => {
+      setTime(timeout)
+
+      if (user === 'start') {
+        setTimeout(() => {
+          navigate.navigate("Question" as never)
+        }, 3000)
+        return;
+      }
+      setData(user)
+    })
+  }
+}, [name])
+
+
+// const [timer, setTimer] = useState(15)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTimer((prevTimer) => {
+  //       if (prevTimer > 0) {
+  //         return prevTimer - 1
+  //       } else {
+  //         clearInterval(interval)
+  //         return 0
+  //       }
+  //     })
+  //   }, 1000)
+  //   return () => clearInterval(interval)
+  // }, [])
+
+  const renderItem = ({item} : any) => (
+    <View>
+      <View>
+        <Image source={{uri: item.avatar}} />
+        <Text>{item.name}</Text>
+      </View>
+    </View>
+  )
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -71,21 +131,21 @@ const FindMatch = () => {
       </View>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", marginBottom: 100 }}>
         <Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
-          {timer < 10 ? `0${timer}` : timer}
+          {time} s
         </Text>
         <Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
           Finding Oppenent
         </Text>
         <Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
-          4/4
+          {data.length} / 4
         </Text>
-
-        {dummyData.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.button}>
-            <Image style={styles.logo2} source={item.avatar} />
-            <Text style={styles.input}>{item.name}</Text>
-          </TouchableOpacity>
-        ))}
+        <FlatList
+              data={data}
+              horizontal={false}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{ marginTop: 30 }}
+            />
       </View>
     </View>
   );
