@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState } from "react"
+import { StatusBar } from "expo-status-bar"
 import {
   Image,
   Pressable,
@@ -24,88 +24,34 @@ import { jwtDecode } from "jwt-decode";
 import LottieView from "lottie-react-native";
 
 interface DataAvatar {
-  id: string;
-  name: string;
-  imageUrl: string;
+  id: string
+  name: string
+  price: number
+  secureurl: string
 }
 const Profile = () => {
-  const data: DataAvatar[] = [
-    {
-      id: "1",
-      name: "John",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/yehzdlmsq8zni6r2avyw",
-    },
-    {
-      id: "2",
-      name: "Jane",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/jhfhkp00tysoyfirstgv",
-    },
-    {
-      id: "3",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/in7gudtnpbh3ucgarocb",
-    },
-    {
-      id: "4",
-      name: "Alice",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/swhikj7jcrxtsztnsxm1",
-    },
-    {
-      id: "5",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/ehjgvkthssavhudq7fz3",
-    },
-    {
-      id: "6",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/eghrmfdgmuqcvnsebzbq",
-    },
-    {
-      id: "7",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/dxhjxxux57ugnqpdvnlc",
-    },
-    {
-      id: "8",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/aa3darcpdkbp6jiclt7b",
-    },
-    {
-      id: "9",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/qxf1nihaueiuu9cnbuzb",
-    },
-    {
-      id: "10",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/bau5xru0wnsn8n4geiow",
-    },
-    {
-      id: "11",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/pkmvxy44mwbr47zq1j3v",
-    },
-    {
-      id: "12",
-      name: "Bob",
-      imageUrl:
-        "https://res.cloudinary.com/dsbrglrly/image/upload/f_auto,q_auto/v1/User%20Avatar/kvj9hbzge1kcqeg9gkih",
-    },
-  ];
-  const [userInput, setUserInput] = useState("");
-  const [selectedAvatar, setSelectedAvatar] = useState<DataAvatar | null>(null);
-  const navigation = useNavigation();
+  const [userInput, setUserInput] = useState("")
+  const [selectedAvatar, setSelectedAvatar] = useState<DataAvatar | null>(null)
+  const [avatars, setAvatars] = useState<DataAvatar[]>([])
+  const navigation = useNavigation()
+
+  useEffect(() => {
+    const fetchAvatars = async () => {
+      try {
+        const response = await axios.get(
+          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-avatars",
+          { headers: { "ngrok-skip-browser-warning": "true" } }
+        )
+        const avatarsData = response.data.data
+        setAvatars(avatarsData)
+        console.log("Avatars data:", avatarsData)
+      } catch (error) {
+        console.error("Error fetching avatars:", error)
+      }
+    }
+
+    fetchAvatars()
+  }, [])
 
   const handleUpdate = async () => {
     try {
@@ -120,17 +66,14 @@ const Profile = () => {
           console.error("User data not found");
           return;
         }
-        // const userToken = userData.token
-
-        // console.log("User token:", userToken)\
       }
 
       if (selectedAvatar) {
-        const imageUrl = selectedAvatar.imageUrl;
-        const formData = new FormData();
-        formData.append("name", userInput);
-        formData.append("avatar", imageUrl);
-        formData.append("diamond", "0");
+        const imageUrl = selectedAvatar.secureurl
+        const formData = new FormData()
+        formData.append("name", userInput)
+        formData.append("avatar", imageUrl)
+        formData.append("diamond", "0")
         const response = await axios.patch(
           "https://wondrous-moth-complete.ngrok-free.app/api/v1/update-user",
           formData,
@@ -169,25 +112,27 @@ const Profile = () => {
       <StatusBar style="auto" />
       <Text style={styles.textup}>Select Your Avatar</Text>
       <View style={styles.grid}>
-        {data.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => {
-              setSelectedAvatar(item);
-              console.log("Selected Avatar:", item);
-            }}
-          >
-            <Image
-              style={[
-                styles.avatar,
-                selectedAvatar && selectedAvatar.id === item.id
-                  ? styles.activeAvatar
-                  : null,
-              ]}
-              source={{ uri: item.imageUrl }}
-            />
-          </TouchableOpacity>
-        ))}
+        {avatars
+          .filter((avatar) => avatar.price === 0)
+          .map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => {
+                setSelectedAvatar(item)
+                console.log("Selected Avatar:", item)
+              }}
+            >
+              <Image
+                style={[
+                  styles.avatar,
+                  selectedAvatar && selectedAvatar.id === item.id
+                    ? styles.activeAvatar
+                    : null,
+                ]}
+                source={{ uri: item.secureurl }}
+              />
+            </TouchableOpacity>
+          ))}
       </View>
       <View style={{ flex: 1, marginTop: 50 }}>
         <View style={styles.inputContainer}>
