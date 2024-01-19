@@ -7,6 +7,8 @@ import LottieView from "lottie-react-native"
 // socket client
 import { socket } from "../utils/socket"
 import { useNavigation } from "@react-navigation/native"
+import { jwtDecode } from "jwt-decode"
+import { io } from "socket.io-client"
 interface Question {
   id: string
   image_question: string
@@ -16,7 +18,12 @@ interface Question {
   D: string
   answer: string
   time: number
-} 
+}
+interface DecodedToken {
+  id: string
+  name: string
+  avatar: string
+}
 const Question = () => {
   const [data, setData] = useState<Question>({
     id: "",
@@ -30,6 +37,8 @@ const Question = () => {
   })
   const [index, setIndex] = useState(0)
   const navigate = useNavigation()
+  const [socket, setSocket] = useState<any>(null)
+  const [timer, setTimer] = useState(0)
   // untuk select jawaban dan warna background berubah start
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const handlePress = (option: number) => {
@@ -38,6 +47,58 @@ const Question = () => {
   // untuk select jawaban dan warna background berubah end
 
   const [correctAnswer, setCorrectAnswer] = useState<number>(2) // Set the correct answer
+  const [user, setUser] = useState<{ id: string; name: string } | null>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem("user") + ""
+    const { id, name } = jwtDecode<DecodedToken>(token)
+    setUser({ id, name })
+
+    const newSocket = io("https://lemming-merry-amoeba.ngrok-free.app", {
+      extraHeaders: { "ngrok-skip-browser-warning": "true" },
+    })
+
+    setSocket(newSocket)
+
+    return () => {
+      newSocket.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("startGame", () => {
+        // Handle start game event
+        // Update UI or perform any necessary actions
+      })
+
+      socket.on("question", (question: any) => {
+        // Handle receiving questions event
+        setCorrectAnswer(question.answer)
+        setTimer(15)
+        setSelectedOption(null)
+      })
+
+      socket.on("endGame", (data: any) => {
+        // Handle end game event
+        // Update UI or perform any necessary actions
+      })
+
+      socket.on("disconnect", () => {
+        // Handle disconnect event
+        // Update UI or perform any necessary actions
+      })
+
+      return () => {
+        socket.off("startGame")
+        socket.off("question")
+        socket.off("endGame")
+        socket.off("disconnect")
+        // ... (other socket.off events)
+      }
+    }
+  }, [socket, selectedOption])
+  // untuk select jawaban dan warna background berubah start
 
   //timer for the question start
   // const [timer, setTimer] = useState(15)
@@ -57,22 +118,20 @@ const Question = () => {
   //timer for the question end
 
   // socket
-useEffect(() => {
-  if (data.time == 0) {
-    setIndex(prev => prev + 1)
-    socket.emit('getQuest', {index: index+1})
-  }
-}, [data.time])
+  useEffect(() => {
+    if (data.time == 0) {
+      setIndex((prev) => prev + 1)
+      socket.emit("getQuest", { index: index + 1 })
+    }
+  }, [data.time])
 
   useEffect(() => {
-    socket.emit('joinLobby', {name: 'Nandy' , avatar: 'bit.ly/dan-abramov'})
+    socket.emit("joinLobby", { name: "Nandy", avatar: "bit.ly/dan-abramov" })
 
- 
-
-    socket.on('getQuest', (data) => {
-    if(data == false){
-      navigate.navigate("Podium" as never)
-    }
+    socket.on("getQuest", (data: any) => {
+      if (data == false) {
+        navigate.navigate("Podium" as never)
+      }
       setData(data)
     })
   }, [])
@@ -118,7 +177,6 @@ useEffect(() => {
       >
         {/* {timer < 10 ? `0${timer}` : timer} */}
         {data.time}
-
       </Text>
       <View
         style={{
@@ -130,7 +188,7 @@ useEffect(() => {
       >
         <Image
           style={styles.imageQuestion}
-          source={{uri:data.image_question}}
+          source={{ uri: data.image_question }}
         />
         <TouchableOpacity onPress={() => handlePress(1)}>
           <View
