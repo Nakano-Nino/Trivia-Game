@@ -3,8 +3,16 @@ import { Image, View, StyleSheet, TouchableOpacity, Text } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import { GrTrophy } from "react-icons/gr"
 import LottieView from "lottie-react-native"
+import { jwtDecode } from "jwt-decode"
+import { io } from "socket.io-client"
+import { Socket } from "socket.io-client"
+
+interface DecodedToken {
+  id: string
+  name: string
+}
 const Question = () => {
-  // untuk select jawaban dan warna background berubah start
+  const [socket, setSocket] = useState<Socket | null>(null)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const handlePress = (option: number) => {
     setSelectedOption(option)
@@ -12,6 +20,58 @@ const Question = () => {
   // untuk select jawaban dan warna background berubah end
 
   const [correctAnswer, setCorrectAnswer] = useState<number>(2) // Set the correct answer
+  const [user, setUser] = useState<{ id: string; name: string } | null>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem("user") + ""
+    const { id, name } = jwtDecode<DecodedToken>(token)
+    setUser({ id, name })
+
+    const newSocket = io("https://lemming-merry-amoeba.ngrok-free.app", {
+      extraHeaders: { "ngrok-skip-browser-warning": "true" },
+    })
+
+    setSocket(newSocket)
+
+    return () => {
+      newSocket.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("startGame", () => {
+        // Handle start game event
+        // Update UI or perform any necessary actions
+      })
+
+      socket.on("question", (question) => {
+        // Handle receiving questions event
+        setCorrectAnswer(question.answer)
+        setTimer(15)
+        setSelectedOption(null)
+      })
+
+      socket.on("endGame", (data) => {
+        // Handle end game event
+        // Update UI or perform any necessary actions
+      })
+
+      socket.on("disconnect", () => {
+        // Handle disconnect event
+        // Update UI or perform any necessary actions
+      })
+
+      return () => {
+        socket.off("startGame")
+        socket.off("question")
+        socket.off("endGame")
+        socket.off("disconnect")
+        // ... (other socket.off events)
+      }
+    }
+  }, [socket, selectedOption])
+  // untuk select jawaban dan warna background berubah start
 
   //timer for the question start
   const [timer, setTimer] = useState(15)

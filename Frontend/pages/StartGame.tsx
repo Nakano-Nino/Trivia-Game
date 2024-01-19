@@ -268,7 +268,7 @@ const StartGame = () => {
       <TouchableOpacity style={styles.button}>
         <Text
           style={styles.text}
-          onPress={() => navigate.navigate("Socket" as never)}
+          onPress={() => navigate.navigate("FindMatch" as never)}
         >
           Play Game
         </Text>
