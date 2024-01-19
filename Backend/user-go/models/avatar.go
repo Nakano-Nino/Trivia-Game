@@ -6,7 +6,7 @@ import (
 )
 
 type Avatar struct {
-	ID          uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
+	ID          uuid.UUID `json:"id" gorm:"type:uuid;default:gen_random_uuid()"`
 	Name        string    `json:"name" gorm:"type: varchar(255)"`
 	SecureUrl   string    `json:"secureurl" gorm:"type: varchar(255)"`
 	Price       int       `json:"price" gorm:"type: int"`

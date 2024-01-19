@@ -3,11 +3,13 @@ package avatar
 import (
 	"github.com/Nakano-Nino/Trivia-Game/repositories/users"
 	"github.com/Nakano-Nino/Trivia-Game/models"
+	// "github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type AvatarTransactionRepository interface {
-	GetAvatar(Name string) (models.Avatar, error)
+	FindAvatars() ([]models.Avatar, error)
+	GetAvatar(name string) (models.Avatar, error)
 	GetUser(Email string) (models.User, error)
 	UpdateUser(user models.User) (models.User, error)
 }
@@ -28,16 +30,23 @@ func RepositoryUser(userRepository *users.UserRepository) *usersRepository {
 	return &usersRepository{userRepository}
 }
 
-func (r *avatarTransactionRepository) GetAvatar(Name string) (models.Avatar, error) {
+func (r *avatarTransactionRepository) GetAvatar(name string) (models.Avatar, error) {
 	var avatar models.Avatar
-	err := r.db.First(&avatar, "name = ?", Name).Error
+	err := r.db.First(&avatar, "name = ?", name).Error
 
 	return avatar, err
 }
 
+func (r *avatarTransactionRepository) FindAvatars() ([]models.Avatar, error) {
+	var avatars []models.Avatar
+	err := r.db.Find(&avatars).Error
+
+	return avatars, err
+}
+
 func (r *avatarTransactionRepository) GetUser(Email string) (models.User, error) {
 	var user models.User
-	err := r.db.First(&user, "email = ?", Email).Error
+	err := r.db.Preload("PurchasedAvatars").First(&user, "email = ?", Email).Error
 
 	return user, err
 }
