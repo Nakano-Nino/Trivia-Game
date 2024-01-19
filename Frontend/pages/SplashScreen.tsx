@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar"
 import { Image, Pressable, StyleSheet, Text, View } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { useNavigation } from "@react-navigation/native"
+import LottieView from "lottie-react-native"
 
 const SplashScreen = () => {
   const navigation = useNavigation()
@@ -17,6 +18,16 @@ const SplashScreen = () => {
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg1.png")} />
       <Image style={styles.logo1} source={require("../assets/logo1.png")} />
+
+      <View>
+        <View style={{top: -250}}>
+      <LottieView
+              source={require("../assets/lottivew/rocket.json")}
+              autoPlay
+              loop
+            />
+            </View>
+      </View>
       <StatusBar style="auto" />
     </View>
   )
