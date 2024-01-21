@@ -81,4 +81,14 @@ export default async function lobby(io: Server, socket: Socket) {
             lobbies.room_1.timeout -= 1;
         }, 1000)
     });
+
+    socket.on('gameEnd', () => {
+        lobbies.room_1.questions = [];
+        lobbies.room_1.users = [];
+        lobbies.room_1.isEmited = false;
+        lobbies.room_1.isFinished = true;
+        lobbies.room_1.timeout = 10;
+
+        io.to('room_1').emit('gameReset')
+    });
 }
