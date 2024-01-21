@@ -18,20 +18,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as WebBrowser from "expo-web-browser"
 import { useNavigation } from "@react-navigation/native"
 import { Alert } from "react-native"
-
-
+import LottieView from "lottie-react-native"
 interface DecodedToken {
-  avatar: string
-  name: string
-  diamond: string
-  email: string
+  avatar: string;
+  name: string;
+  diamond: string;
+  email: string;
 }
 
 interface DiamondOption {
-  amount: number
-  image: string
-  price: number
-  id: string
+  amount: number;
+  image: string;
+  price: number;
+  id: string;
 }
 
 interface AvatarOption {
@@ -58,11 +57,11 @@ const StartGame = () => {
   const navigate = useNavigation()
 
   const toggleModalDiamond = () => {
-    setModalDiamond(!isModalDiamond)
-  }
+    setModalDiamond(!isModalDiamond);
+  };
   const toggleProfileEdit = () => {
-    setModalVisible(!isModalVisible)
-  }
+    setModalVisible(!isModalVisible);
+  };
 
   useEffect(() => {
     const fetchDiamondOptions = async () => {
@@ -71,12 +70,12 @@ const StartGame = () => {
 
         setDiamondOptions(response.data.data)
       } catch (error) {
-        console.error("Error fetching diamond options:", error)
+        console.error("Error fetching diamond options:", error);
       }
-    }
+    };
 
-    fetchDiamondOptions()
-  }, [])
+    fetchDiamondOptions();
+  }, []);
 
   useEffect(() => {
     const fetchAvatarOptions = async () => {
@@ -113,20 +112,20 @@ const StartGame = () => {
         setAvatarUser({
           ...avatarUser,
           avatar: userResponse.data.data.avatar || "",
-        })
+        });
 
-        setUserDiamond(userResponse.data.data.diamond || 0)
+        setUserDiamond(userResponse.data.data.diamond || 0);
       } catch (error) {
-        console.error("Error fetching avatar options:", error)
+        console.error("Error fetching avatar options:", error);
       }
-    }
+    };
 
-    fetchAvatarOptions()
-  }, [])
+    fetchAvatarOptions();
+  }, []);
 
   const handleBuyAvatar = async (selectedItem: AvatarOption | null) => {
     if (selectedItem) {
-      console.log("Selected Avatar:", selectedItem)
+      console.log("Selected Avatar:", selectedItem);
 
       const avatarPrice = selectedItem.price
       console.log("Avatar price:", avatarPrice)
@@ -137,7 +136,7 @@ const StartGame = () => {
             ? { ...item, purchased: true }
             : item
         )
-      )
+      );
 
       if (avatarPrice == "Purchased" || avatarPrice == 0) {
         try {
@@ -191,15 +190,15 @@ const StartGame = () => {
                 Authorization: `Bearer ${token}`,
               },
             }
-          )
+          );
 
           const newToken = responseUpdateAvatar.data.data.token
 
           localStorage.setItem("user", newToken)
           setUserDiamond((prevDiamond) => {
-            const newDiamond = prevDiamond - avatarPrice
-            return newDiamond
-          })
+            const newDiamond = prevDiamond - avatarPrice;
+            return newDiamond;
+          });
           setAvatarUser({
             ...avatarUser,
             avatar: selectedItem.secureurl,
@@ -210,24 +209,24 @@ const StartGame = () => {
             await AsyncStorage.setItem(
               "diamond",
               (userDiamond - avatarPrice).toString()
-            )
+            );
           } catch (error) {
-            console.error("Error saving to AsyncStorage:", error)
+            console.error("Error saving to AsyncStorage:", error);
           }
 
-          toggleProfileEdit()
+          toggleProfileEdit();
         } catch (error) {
-          console.error("Error buying avatar:", error)
+          console.error("Error buying avatar:", error);
         }
       } else {
         Alert.alert("Error", "Diamond not enough")
       }
     }
-  }
+  };
 
   const handleBuyDiamond = async (obj: DiamondOption) => {
     if (selectedDiamond) {
-      console.log("Selected Diamond:", selectedDiamond)
+      console.log("Selected Diamond:", selectedDiamond);
     }
     try {
       const token = await AsyncStorage.getItem("user")
@@ -241,13 +240,13 @@ const StartGame = () => {
             Authorization: `bearer ${token}`,
           },
         }
-      )
-      console.log("Buy Diamond Response:", response.data)
+      );
+      console.log("Buy Diamond Response:", response.data);
 
-      WebBrowser.openBrowserAsync(response.data.data.url)
-      setModalDiamond(false)
+      WebBrowser.openBrowserAsync(response.data.data.url);
+      setModalDiamond(false);
     } catch (err) {
-      console.log("Error Topup", err)
+      console.log("Error Topup", err);
     }
   }
 
@@ -272,11 +271,13 @@ const StartGame = () => {
             source={require("../assets/adddiamondpng.png")}
           />
         </TouchableOpacity>
-
-        <Image
-          style={styles.diamond}
-          source={require("../assets/diamond.png")}
+<View style={styles.diamond}>
+<LottieView
+          source={require("../assets/lottivew/diamond.json")}
+          autoPlay
+          loop
         />
+      </View>
       </View>
       <View>
         <Image style={styles.avatar} source={{ uri: avatarUser.avatar }} />
@@ -320,8 +321,8 @@ const StartGame = () => {
                   <Text style={styles.listDiamond}>{option.amount}</Text>
                   <TouchableOpacity
                     onPress={() => {
-                      setSelectedDiamond(option)
-                      console.log("Selected Diamond:", option)
+                      setSelectedDiamond(option);
+                      console.log("Selected Diamond:", option);
                     }}
                   >
                     <Image
@@ -372,8 +373,8 @@ const StartGame = () => {
                   <View key={item.secureurl} style={styles.viewAvatar}>
                     <TouchableOpacity
                       onPress={() => {
-                        setSelectedAvatar(item)
-                        console.log(item)
+                        setSelectedAvatar(item);
+                        console.log(item);
                       }}
                     >
                       <Image
@@ -405,10 +406,10 @@ const StartGame = () => {
       </Modal>
       <Image style={styles.artist} source={require("../assets/artist.png")} />
     </View>
-  )
-}
+  );
+};
 
-export default StartGame
+export default StartGame;
 
 const styles = StyleSheet.create({
   container: {
@@ -442,10 +443,10 @@ const styles = StyleSheet.create({
     marginLeft: 65,
   },
   diamond: {
-    width: 25,
-    height: 25,
-    top: -53,
-    marginLeft: -8,
+    width: 45,
+    height: 45,
+    top: -63,
+    marginLeft: -18,
   },
   diamondButton: {
     backgroundColor: "#000000",
@@ -668,4 +669,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex: 100,
   },
-})
+});

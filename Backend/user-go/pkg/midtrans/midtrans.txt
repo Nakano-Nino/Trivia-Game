@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"os"
 	"net/http"
 
 	midtransdto "github.com/Nakano-Nino/Trivia-Game/dto/midtrans"
@@ -13,10 +12,6 @@ import (
 )
 
 var s snap.Client
-
-func initializeSnapClient() {
-	s.New(os.Getenv("MIDTRANS_SERVER_KEY"), midtrans.Sandbox)
-}
 
 func CreateTransaction(c *gin.Context, input midtransdto.MidtransRequest) {
 	err := c.ShouldBindJSON(&input)

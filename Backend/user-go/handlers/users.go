@@ -5,18 +5,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+	"time"
 
+	midtransdto "github.com/Nakano-Nino/Trivia-Game/dto/midtrans"
 	dto "github.com/Nakano-Nino/Trivia-Game/dto/result"
 	usersdto "github.com/Nakano-Nino/Trivia-Game/dto/users"
 	"github.com/Nakano-Nino/Trivia-Game/models"
 	jwtToken "github.com/Nakano-Nino/Trivia-Game/pkg/jwt"
 	"github.com/Nakano-Nino/Trivia-Game/repositories/users"
+	fp "github.com/amonsat/fullname_parser"
 	"github.com/go-playground/validator"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/midtrans/midtrans-go"
+	"github.com/midtrans/midtrans-go/snap"
 )
-
-const aud = "499994503524-88e2rd415lra144ho7hb6ibsao3rpqro.apps.googleusercontent.com"
 
 type handler struct {
 	UserRepository users.UserRepository
@@ -64,8 +66,6 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(request)
-
 	user, err := h.UserRepository.Login(request.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusOK)
@@ -87,8 +87,6 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Unauthorize")
 		return
 	}
-
-	fmt.Println(token)
 
 	Resp := usersdto.Resp{
 		Name:   user.Name,
@@ -168,16 +166,6 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var name = r.FormValue("name")
 	var avatar = r.FormValue("avatar")
-	var diamond = r.FormValue("diamond")
-
-	dm, err := strconv.Atoi(diamond)
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
 
 	// request := new(usersdto.UpdateUserRequest)
 	// if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -215,10 +203,6 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		user.Avatar = avatar
 	}
 
-	if diamond != "0" {
-		user.Diamond = dm
-	}
-
 	data, err := h.UserRepository.UpdateUser(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -250,12 +234,80 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (h *handler) BuyDiamond(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var s snap.Client
+	s.New(midtrans.ServerKey, midtrans.Sandbox)
+
+	input := new(midtransdto.MidtransRequest)
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	validation := validator.New()
+	err := validation.Struct(input)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	userId := userInfo["id"].(string)
+	uName := userInfo["name"].(string)	
+	email := userInfo["email"].(string)	
+
+	parsedName := fp.ParseFullname(uName)
+	firstName := parsedName.First
+	lastName := parsedName.Last
+
+	req := &snap.Request{
+		TransactionDetails: midtrans.TransactionDetails{
+			OrderID:  userId + "-" + time.Now().Format("060102150405"),
+			GrossAmt: input.Amount,
+		},
+		CreditCard: &snap.CreditCardDetails{
+			Secure: true,
+		},
+		CustomerDetail: &midtrans.CustomerDetails{
+			FName: firstName,
+			LName: lastName,
+			Email: email,
+		},
+		EnabledPayments: snap.AllSnapPaymentType,
+	}
+
+	resp, _ := s.CreateTransaction(req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	midtransResponse := midtransdto.MidtransResponse{
+		Token: resp.Token,
+		Url:   resp.RedirectURL,
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: midtransResponse}
+	json.NewEncoder(w).Encode(response)
+}
+
 func ConvertResponse(u models.User) usersdto.UserResponse {
 	return usersdto.UserResponse{
 		ID:     u.ID,
 		Name:   u.Name,
 		Email:  u.Email,
 		Avatar: u.Avatar,
+		PurchasedAvatars: u.PurchasedAvatars,
 		Diamond: u.Diamond,
 		Role:   u.Role,
 	}

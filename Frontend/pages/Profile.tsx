@@ -6,13 +6,14 @@ import {
   Text,
   TextInput,
   View,
-} from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import { useNavigation } from "@react-navigation/native"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { API } from "../utils/API"
-import { FaEdit } from "react-icons/fa"
-import { jwtDecode } from "jwt-decode"
+} from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { FaEdit } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
+import LottieView from "lottie-react-native";
+import { API } from "../utils/API";
 
 interface DataAvatar {
   id: string
@@ -43,15 +44,15 @@ const Profile = () => {
 
   const handleUpdate = async () => {
     try {
-      const userDataString = await AsyncStorage.getItem("user")
-      console.log("User data string:", userDataString)
-      const token = JSON.parse(userDataString || "{}")
+      const userDataString = await AsyncStorage.getItem("user");
+      console.log("User data string:", userDataString);
+      const token = JSON.parse(userDataString || "{}");
       if (userDataString !== null) {
         const userDecode = jwtDecode(userDataString)
 
         if (!userDecode) {
-          console.error("User data not found")
-          return
+          console.error("User data not found");
+          return;
         }
       }
 
@@ -67,28 +68,28 @@ const Profile = () => {
               Authorization: `Bearer ${token}`,
             },
           }
-        )
-        const updatedUserData = response.data.data
+        );
+        const updatedUserData = response.data.data;
         if (updatedUserData) {
-          console.log("Update successful", updatedUserData)
-          const newToken = updatedUserData.token
-          await AsyncStorage.setItem("user", newToken)
-          navigation.navigate("StartGame" as never)
+          console.log("Update successful", updatedUserData);
+          const newToken = updatedUserData.token;
+          await AsyncStorage.setItem("user", newToken);
+          navigation.navigate("StartGame" as never);
         } else {
-          console.error("Update failed - No updated user data in the response")
+          console.error("Update failed - No updated user data in the response");
         }
       } else {
-        console.error("Please select an avatar")
+        console.error("Please select an avatar");
       }
     } catch (error) {
-      console.error("Update failed", error)
+      console.error("Update failed", error);
     }
-  }
+  };
 
   const handleTextChange = (text: string) => {
-    setUserInput(text)
-    console.log("Input Text:", text)
-  }
+    setUserInput(text);
+    console.log("Input Text:", text);
+  };
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -129,14 +130,20 @@ const Profile = () => {
             onChangeText={handleTextChange}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-          <Text style={styles.text}>Continue</Text>
+        <View style={styles.button} >
+        <TouchableOpacity onPress={handleUpdate} style={{width: 250}}>
+          <LottieView
+            source={require("../assets/lottivew/continuButton.json")}
+            autoPlay
+            loop
+          />
         </TouchableOpacity>
+        </View>
       </View>
     </View>
-  )
-}
-export default Profile
+  );
+};
+export default Profile;
 
 const styles = StyleSheet.create({
   container: {
@@ -202,16 +209,11 @@ const styles = StyleSheet.create({
     color: "black",
   },
   button: {
-    backgroundColor: "#5ce1e6",
-    padding: 10,
-    width: 300,
-    height: 50,
-    borderRadius: 10,
-    marginTop: 17,
+    marginTop: 10,
+
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    color: "#F2F2F2",
     position: "relative",
   },
   text: {
@@ -227,4 +229,4 @@ const styles = StyleSheet.create({
     borderWidth: 2, // You can customize the style for the active avatar
     borderColor: "#5ce1e6", // Border color for the active avatar
   },
-})
+});

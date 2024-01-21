@@ -92,79 +92,145 @@ const Podium = () => {
         >
           <Image
             style={{
-              width: 70,
-              height: 70,
-              justifyContent: "center",
-              alignContent: "center",
+              alignItems: "center",
+              top: 44,
+              marginLeft: -285,
             }}
-            source={require("../assets/avatar1.png")}
-          />
-          <Text
-            style={{ fontWeight: "bold", fontSize: 15, textAlign: "center" }}
           >
-            Lee Min Goo
-          </Text>
-          <Text
-            style={{ fontWeight: "bold", fontSize: 15, textAlign: "center" }}
-          >
-            4700
-          </Text>
-        </View>
-        <View
-          style={{
-            // marginBottom: 10,
-            alignItems: "center",
-            top: 210,
-            marginLeft: 30,
-          }}
-        >
-          <Image
+            <View
+              style={{
+                alignItems: "center",
+                width: 120,
+                height: 120,
+                top: 10,
+              }}
+            >
+              <Image
+                style={{
+                  top: 10,
+                  width: 120,
+                  height: 120,
+                }}
+                source={require("../assets/avatar2.png")}
+              />
+            </View>
+            <View style={{ margin: -100, top: 130 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                Bambang
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                1220
+              </Text>
+            </View>
+          </View>
+          <View
             style={{
-              width: 70,
-              height: 70,
-              justifyContent: "center",
-              alignContent: "center",
+              alignItems: "center",
+              top: 6,
+              marginLeft: 2,
             }}
-            source={require("../assets/avatar2.png")}
-          />
-          <Text
-            style={{ fontWeight: "bold", fontSize: 15, textAlign: "center" }}
           >
-            Lee Min Goo
-          </Text>
-          <Text
-            style={{ fontWeight: "bold", fontSize: 15, textAlign: "center" }}
-          >
-            2000
-          </Text>
-        </View>
-        <View
-          style={{
-            // marginBottom: 10,
-            alignItems: "center",
-            top: 190,
-            marginLeft: 300,
-          }}
-        >
-          <Image
+            <View
+              style={{
+                alignItems: "center",
+                width: 120,
+                height: 120,
+                top: 10,
+              }}
+            >
+              <Image
+                style={{
+                  top: 10,
+                  width: 140,
+                  height: 140,
+                }}
+                source={require("../assets/avatar1.png")}
+              />
+            </View>
+            <View style={{ margin: 0, top: 70 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                Ucok (You)
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                1800
+              </Text>
+            </View>
+          </View>
+          <View
             style={{
-              width: 70,
-              height: 70,
-              justifyContent: "center",
-              alignContent: "center",
+              alignItems: "center",
+              top: -130,
+              marginLeft: 290,
             }}
-            source={require("../assets/avatar3.png")}
-          />
-          <Text
-            style={{ fontWeight: "bold", fontSize: 15, textAlign: "center" }}
           >
-            Lee Min Goo
-          </Text>
-          <Text
-            style={{ fontWeight: "bold", fontSize: 15, textAlign: "center" }}
-          >
-            1222
-          </Text>
+            <View
+              style={{
+                alignItems: "center",
+                width: 120,
+                height: 120,
+                top: 10,
+              }}
+            >
+              <Image
+                style={{
+                  top: 10,
+                  width: 120,
+                  height: 120,
+                }}
+                source={require("../assets/avatar3.png")}
+              />
+            </View>
+            <View style={{ margin: 0, top: 30 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                Putri
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                1020
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
         <View style={{ alignItems: "center", position: "relative" }}>
