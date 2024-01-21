@@ -13,7 +13,7 @@ import { FaEdit } from "react-icons/fa"
 import React, { useEffect, useState } from "react"
 import { FontAwesome } from "@expo/vector-icons"
 import { jwtDecode } from "jwt-decode"
-import axios from "axios"
+import { API } from "../utils/API"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as WebBrowser from "expo-web-browser"
 import { useNavigation } from "@react-navigation/native"
@@ -36,7 +36,7 @@ interface DiamondOption {
 
 interface AvatarOption {
   secureurl: string
-  price: number
+  price: any
   name: string
   purchased: boolean
   id: string
@@ -50,12 +50,8 @@ const StartGame = () => {
   const [avatarUser, setAvatarUser] = useState({ avatar })
   const [diamondOptions, setDiamondOptions] = useState<DiamondOption[]>([])
   const [avatarOptions, setAvatarOptions] = useState<AvatarOption[]>([])
-  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(
-    null
-  )
-  const [selectedDiamond, setSelectedDiamond] = useState<DiamondOption | null>(
-    null
-  )
+  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(null)
+  const [selectedDiamond, setSelectedDiamond] = useState<DiamondOption | null>(null)
   const initialUserDiamond = parseInt(diamond, 10)
   const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
 
@@ -71,10 +67,7 @@ const StartGame = () => {
   useEffect(() => {
     const fetchDiamondOptions = async () => {
       try {
-        const response = await axios.get(
-          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-diamonds",
-          { headers: { "ngrok-skip-browser-warning": "true" } }
-        )
+        const response = await API.get("/api/v1/get-diamonds")
 
         setDiamondOptions(response.data.data)
       } catch (error) {
@@ -90,20 +83,15 @@ const StartGame = () => {
       try {
         const token = localStorage.getItem("user") || ""
         const { email } = jwtDecode<DecodedToken>(token)
-        const userResponse = await axios.get(
-          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-user",
+        const userResponse = await API.get("/api/v1/get-user",
           {
-            params: { email },
-            headers: { "ngrok-skip-browser-warning": "true" },
+            params: { email }
           }
         )
 
         const purchasedAvatars = userResponse.data.data.purchasedavatars
 
-        const avatarsResponse = await axios.get(
-          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-avatars",
-          { headers: { "ngrok-skip-browser-warning": "true" } }
-        )
+        const avatarsResponse = await API.get("/api/v1/get-avatars")
         const allAvatars = avatarsResponse.data.data
 
         const purchasedAvatarIds = purchasedAvatars.map(
@@ -151,13 +139,40 @@ const StartGame = () => {
         )
       )
 
+      if (avatarPrice == "Purchased" || avatarPrice == 0) {
+        try {
+          const updateAvatarFormData = new FormData()
+          updateAvatarFormData.append("avatar", selectedItem.secureurl)
+          const responseUpdateAvatar = await API.patch("/api/v1/update-user", updateAvatarFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+
+          const newToken = responseUpdateAvatar.data.data.token
+
+          localStorage.setItem("user", newToken)
+          setUserDiamond((prevDiamond) => {
+            const newDiamond = prevDiamond - avatarPrice
+            return newDiamond
+          })
+          setAvatarUser({
+            ...avatarUser,
+            avatar: selectedItem.secureurl,
+          })
+          toggleProfileEdit();
+        } catch (error) {
+          console.error("Error updating avatar:", error)
+        }
+      } 
       if (avatarPrice != null && userDiamond >= avatarPrice) {
         try {
           const formData = new FormData()
           formData.append("name", selectedItem.name)
-          const response = await axios.post(
-            "https://wondrous-moth-complete.ngrok-free.app/api/v1/buy-avatar",
-            formData,
+          const response = await API.post("/api/v1/buy-avatar", formData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",
@@ -169,9 +184,7 @@ const StartGame = () => {
 
           const updateAvatarFormData = new FormData()
           updateAvatarFormData.append("avatar", selectedItem.secureurl)
-          const responseUpdateAvatar = await axios.patch(
-            "https://wondrous-moth-complete.ngrok-free.app/api/v1/update-user",
-            updateAvatarFormData,
+          const responseUpdateAvatar = await API.patch("/api/v1/update-user", updateAvatarFormData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",
@@ -182,7 +195,7 @@ const StartGame = () => {
 
           const newToken = responseUpdateAvatar.data.data.token
 
-          await localStorage.setItem("user", newToken)
+          localStorage.setItem("user", newToken)
           setUserDiamond((prevDiamond) => {
             const newDiamond = prevDiamond - avatarPrice
             return newDiamond
@@ -218,8 +231,7 @@ const StartGame = () => {
     }
     try {
       const token = await AsyncStorage.getItem("user")
-      const response = await axios.post(
-        "https://wondrous-moth-complete.ngrok-free.app/api/v1/buy-diamond",
+      const response = await API.post("/api/v1/buy-diamond",
         {
           amount: obj.price,
           item_id: obj.id,
@@ -237,6 +249,11 @@ const StartGame = () => {
     } catch (err) {
       console.log("Error Topup", err)
     }
+  }
+
+
+  const handleStartGame = () => {
+  navigate.navigate("FindMatch" as never)
   }
 
   return (
@@ -271,7 +288,7 @@ const StartGame = () => {
       <TouchableOpacity style={styles.button}>
         <Text
           style={styles.text}
-          onPress={() => navigate.navigate("FindMatch" as never)}
+          onPress={handleStartGame}
         >
           Play Game
         </Text>

@@ -9,19 +9,11 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation, NavigationProp  } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { jwtDecode } from "jwt-decode";
 
 // socket client
-import { socket } from "../utils/socket";
+import { initializeSocket } from "../utils/socket";
 import { FlatList } from "react-native-gesture-handler";
-
-type YourNavWigatorProps = {
-  // Define your navigation stack properties here
-  // For example:
-  FindMatch: undefined;
-  Question: undefined;
-};
 
 interface DecodedToken {
   avatar: string
@@ -37,34 +29,17 @@ const FindMatch = () => {
   const token = localStorage.getItem("user") + "";
   const { avatar, name } = jwtDecode<DecodedToken>(token);
 
-
-  //timer for the question start
-  // const [timer, setTimer] = useState(15); 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTimer((prevTimer) => {
-  //       if (prevTimer > 0) {
-  //         return prevTimer - 1;
-  //       } else {
-  //         clearInterval(interval); // Stop the interval when the timer reaches 0
-  //         return 0;
-  //       }
-  //     });
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
- //timer for the question end
-
-//  useEffect(() => {
-//   if (timer === 0) {
-//     navigation.navigate("Question");
-//   }
-// }, [timer, navigation]);
-
 // socket options
 const [data, setData] = useState<{name: string, avatar:string, id: string}[]>([])
 const [time, setTime] = useState(10)
+const socket = initializeSocket();
+
+useEffect(() => {
+  socket.connect();
+  return () => {
+    socket.disconnect();
+  };
+}, [socket]);
 
 useEffect(() => {
   if (name !== '') {
@@ -87,27 +62,11 @@ useEffect(() => {
   }
 }, [name])
 
-
-// const [timer, setTimer] = useState(15)
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTimer((prevTimer) => {
-  //       if (prevTimer > 0) {
-  //         return prevTimer - 1
-  //       } else {
-  //         clearInterval(interval)
-  //         return 0
-  //       }
-  //     })
-  //   }, 1000)
-  //   return () => clearInterval(interval)
-  // }, [])
-
   const renderItem = ({item} : any) => (
-    <View>
-      <View>
-        <Image source={{uri: item.avatar}} />
-        <Text>{item.name}</Text>
+    <View style={styles.table}>
+      <View style={styles.avatarContainer}>
+        <Image source={item.avatar} style={styles.avatarImage} />
+        <Text style={styles.avatarName}>{item.name}</Text>
       </View>
     </View>
   )
@@ -206,4 +165,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 26,
   },
+  table : {
+    alignItems: "center",
+    margin: 10,
+    marginTop: 20,
+  },
+  avatarContainer: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center"
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10
+  },
+  avatarName: {
+    color: "white",
+  }
 });

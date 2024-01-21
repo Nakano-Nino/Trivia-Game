@@ -2,23 +2,15 @@ import React, { useEffect, useState } from "react"
 import { StatusBar } from "expo-status-bar"
 import {
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native"
-import {
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native-gesture-handler"
-import axios from "axios"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import { TouchableOpacity } from "react-native-gesture-handler"
 import { useNavigation } from "@react-navigation/native"
-
-import { MaterialIcons } from "@expo/vector-icons"
-import Avatar from "../components/Avatar"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { API } from "../utils/API"
 import { FaEdit } from "react-icons/fa"
 import { jwtDecode } from "jwt-decode"
 
@@ -37,10 +29,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchAvatars = async () => {
       try {
-        const response = await axios.get(
-          "https://wondrous-moth-complete.ngrok-free.app/api/v1/get-avatars",
-          { headers: { "ngrok-skip-browser-warning": "true" } }
-        )
+        const response = await API.get("/api/v1/get-avatars")
         const avatarsData = response.data.data
         setAvatars(avatarsData)
         console.log("Avatars data:", avatarsData)
@@ -59,7 +48,6 @@ const Profile = () => {
       const token = JSON.parse(userDataString || "{}")
       if (userDataString !== null) {
         const userDecode = jwtDecode(userDataString)
-        console.log("ININININI", userDecode)
 
         if (!userDecode) {
           console.error("User data not found")
@@ -73,10 +61,7 @@ const Profile = () => {
         formData.append("name", userInput)
         formData.append("avatar", imageUrl)
         formData.append("diamond", "0")
-        const response = await axios.patch(
-          "https://wondrous-moth-complete.ngrok-free.app/api/v1/update-user",
-          formData,
-          {
+        const response = await API.patch("/api/v1/update-user", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,

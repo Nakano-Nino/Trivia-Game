@@ -1,83 +1,15 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { Image, View, StyleSheet, TouchableOpacity, Text } from "react-native"
-import { FontAwesome } from "@expo/vector-icons"
-import { GrTrophy } from "react-icons/gr"
 import LottieView from "lottie-react-native"
+import usePlay from "../hooks/usePlay"
+import { ProgressBar, MD3Colors } from "react-native-paper"
+import { jwtDecode } from "jwt-decode"
 
-// socket client
-import { socket } from "../utils/socket"
-import { useNavigation } from "@react-navigation/native"
-interface Question {
-  id: string
-  image_question: string
-  A: string
-  B: string
-  C: string
-  D: string
-  answer: string
-  time: number
-} 
 const Question = () => {
-  const [data, setData] = useState<Question>({
-    id: "",
-    image_question: "",
-    A: "",
-    B: "",
-    C: "",
-    D: "",
-    answer: "",
-    time: 0,
-  })
-  const [index, setIndex] = useState(0)
-  const navigate = useNavigation()
-  // untuk select jawaban dan warna background berubah start
-  const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const handlePress = (option: number) => {
-    setSelectedOption(option)
-  }
-  // untuk select jawaban dan warna background berubah end
+  const { user, selectOption, question, choices, handleAnswer, index } = usePlay()
+  const token = localStorage.getItem("user") + ""
+  const { avatar } = jwtDecode<any>(token)
 
-  const [correctAnswer, setCorrectAnswer] = useState<number>(2) // Set the correct answer
-
-  //timer for the question start
-  // const [timer, setTimer] = useState(15)
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTimer((prevTimer) => {
-  //       if (prevTimer > 0) {
-  //         return prevTimer - 1
-  //       } else {
-  //         clearInterval(interval) // Stop the interval when the timer reaches 0
-  //         return 0
-  //       }
-  //     })
-  //   }, 1000)
-  //   return () => clearInterval(interval)
-  // }, [])
-  //timer for the question end
-
-  // socket
-useEffect(() => {
-  if (data.time == 0) {
-    setIndex(prev => prev + 1)
-    socket.emit('getQuest', {index: index+1})
-  }
-}, [data.time])
-
-  useEffect(() => {
-    socket.emit('joinLobby', {name: 'Nandy' , avatar: 'bit.ly/dan-abramov'})
-
- 
-
-    socket.on('getQuest', (data) => {
-    if(data == false){
-      navigate.navigate("Podium" as never)
-    }
-      setData(data)
-    })
-  }, [])
-
-  const isCorrect = selectedOption === correctAnswer
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -105,7 +37,7 @@ useEffect(() => {
             marginTop: -5,
           }}
         >
-          1220
+          {user.score}
         </Text>
       </View>
       <Text
@@ -117,7 +49,7 @@ useEffect(() => {
         }}
       >
         {/* {timer < 10 ? `0${timer}` : timer} */}
-        {data.time}
+        {question.time}
 
       </Text>
       <View
@@ -130,56 +62,71 @@ useEffect(() => {
       >
         <Image
           style={styles.imageQuestion}
-          source={{uri:data.image_question}}
+          source={{uri:question.image_question}}
         />
-        <TouchableOpacity onPress={() => handlePress(1)}>
-          <View
+        <View style={styles.optionsContainer}>
+        {choices.map((option) => (
+          <TouchableOpacity
+            key={option}
             style={[
-              styles.listQuestion,
-              selectedOption === 1
-                ? { backgroundColor: isCorrect ? "green" : "yellow" }
-                : null,
+              styles.optionButton,
+              selectOption == question[option] && styles.selectedAnswer,
+
+              selectOption == question[option] && question.time == 0
+                ? selectOption == question.answer
+                  ? {
+                    backgroundColor: "lime",
+                    borderColor: "green",
+                  }
+                  : {
+                    backgroundColor: "tomato",
+                    borderColor: "red",
+                  }
+                : {
+                  backgroundColor: "gray"
+                },
             ]}
+            disabled={question.time === 0}
+            onPress={() => handleAnswer(question[option])}
           >
-            <Text style={styles.nameQuestion}>{data.A}</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePress(2)}>
-          <View
-            style={[
-              styles.listQuestion,
-              selectedOption === 2
-                ? { backgroundColor: isCorrect ? "green" : "yellow" }
-                : null,
+            <Text style={[
+              styles.optionText,
+              selectOption == question[option] && { fontWeight: "bold" },
             ]}
-          >
-            <Text style={styles.nameQuestion}>{data.B}</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePress(3)}>
-          <View
-            style={[
-              styles.listQuestion,
-              selectedOption === 3
-                ? { backgroundColor: isCorrect ? "green" : "yellow" }
-                : null,
-            ]}
-          >
-            <Text style={styles.nameQuestion}>{data.C}</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePress(4)}>
-          <View
-            style={[
-              styles.listQuestion,
-              selectedOption === 4
-                ? { backgroundColor: isCorrect ? "green" : "yellow" }
-                : null,
-            ]}
-          >
-            <Text style={styles.nameQuestion}>{data.D}</Text>
-          </View>
-        </TouchableOpacity>
+            >
+              {option.toUpperCase()} {question[option]}
+            </Text>
+            {selectOption == question[option] && (
+              <Image
+              source={{ uri: avatar }}
+              style={styles.optionImage}
+              />
+            )}
+            {selectOption == question[option] && question.time === 0 && (
+              <Image
+              source={{ uri: user.avatar }}
+              style={styles.optionImage}
+              />
+            )}
+          </TouchableOpacity>
+        ))}
+
+        {/* {question.time === 0 && (
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "whitesmoke" }}>
+          Jawaban Benar:{" "}
+          <Text style={{ display: "flex", color: "white" }}>{question.answer}</Text>
+        </Text>
+        )} */}
+         <ProgressBar
+            progress={index / 5}
+            color={MD3Colors.primary50}
+            style={{ 
+              height: 10, 
+              width: "100%",
+              marginHorizontal: "auto",
+              marginTop: 30,}}
+          />
+        </View>
       </View>
     </View>
   )
@@ -192,7 +139,38 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  listQuestion: {
+  // listQuestion: {
+  //   backgroundColor: "#FFFFFF",
+  //   padding: 10,
+  //   width: 250,
+  //   height: 40,
+  //   borderRadius: 10,
+  //   marginTop: 10,
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   position: "relative",
+  // },
+  // nameQuestion: {
+  //   flex: 1,
+  //   fontSize: 16,
+  //   height: 40,
+  //   padding: 10,
+  //   textAlign: "center",
+  //   fontWeight: "bold",
+  // },
+  imageQuestion: {
+    position: "absolute",
+    top: 150,
+    width: 250,
+    height: 250,
+    borderRadius: 10,
+  },
+  optionsContainer: {
+    position: "absolute",
+    bottom: 50,
+  },
+  optionButton: {
     backgroundColor: "#FFFFFF",
     padding: 10,
     width: 250,
@@ -201,22 +179,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
+    justifyContent: "flex-start",
   },
-  nameQuestion: {
+  selectedAnswer: {
+    backgroundColor: "blue",
+    borderColor: "blue",
+  },
+  optionText: {
     flex: 1,
     fontSize: 16,
     height: 40,
     padding: 10,
-    textAlign: "center",
+    textAlign: "left",
     fontWeight: "bold",
   },
-  imageQuestion: {
-    // position: "absolute",
-    marginTop: 100,
-    width: 250,
-    height: 250,
-    borderRadius: 10,
+  optionImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginLeft: 10,
   },
 })

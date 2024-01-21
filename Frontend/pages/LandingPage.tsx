@@ -1,16 +1,3 @@
-
-// import React from "react";
-// import { StatusBar } from "expo-status-bar";
-// import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-// import * as WebBrowser from "expo-web-browser";
-// import * as Google from "expo-auth-session/providers/google";
-// import { useNavigation } from "@react-navigation/native";
-// import { useState } from "react";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import axios from "axios";
-// WebBrowser.maybeCompleteAuthSession();
-
 import LottieView from "lottie-react-native";
 import React, { useEffect } from "react"
 import { StatusBar } from "expo-status-bar"
@@ -143,17 +130,12 @@ const LandingPage = () => {
 
       return user
 
-      // await AsyncStorage.setItem("user", JSON.stringify(user));
-      // setAuthInProgress(false);
     } catch (error) {
       console.log("Error fetching user info:", error)
       setAuthInProgress(false)
     }
   }
 
-  // useEffect(() => {
-  //   AsyncStorage.getItem("user")
-  // }, [])
   useEffect(() => {
     const checkUserSession = async () => {
       const user = await getLocalUser()
@@ -204,7 +186,6 @@ const styles = StyleSheet.create({
     width: 400,
     height: 400,
     position: "relative",
-    // marginTop: 180,
     marginRight: 20,
   },
   logo2: {
