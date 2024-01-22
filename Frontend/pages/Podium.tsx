@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from "react"
-import { View, StyleSheet, Image, Text } from "react-native"
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { initializeSocket } from "../utils/socket"
+import Button from "../components/ButtonWithLogo";
 
 const Podium = () => {
   const socket = initializeSocket()
   const navigate = useNavigation()
   const [data, setData] = useState([])
 
-  const StartNavigate = () => {
-    navigate.navigate("StartGame" as never)
-  }
-
   useEffect(() => {
     socket.emit("user", { score: 0 })
     socket.on("user", (user) => {
       setData(user.sort((a: any, b: any) => b.score - a.score))
     })
-  }, [StartNavigate])
+
+    socket.emit('gameEnd');
+    socket.on('gameEnd', () => {
+    })
+
+    return () => {
+      socket.on('disconnect', () => {
+        socket.off('gameEnd');
+        socket.off('getQuest');
+        socket.off('user');
+        socket.off('joinLobby');
+        socket.off('disconnect');
+      })
+    }
+  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -84,13 +95,19 @@ const Podium = () => {
                     <Text style={styles.optionText}>{user.name}</Text>
                     <Text style={styles.scoreText}>Score: {user.score}</Text>
                   </View>
-                </View>
-              )}
-            </>
-          ))}
-      </View>
+                )}
+              </>
+            ))}
+            <View>
+              <TouchableOpacity
+                onPress={() => navigate.navigate("StartGame" as never)}
+              >
+                <Text>Back to Home</Text>
+              </TouchableOpacity>
+            </View>
+        </View>
 
-      {/* <View style={{ alignItems: "center" }}>
+      <View style={{ alignItems: "center" }}>
         <View
           style={{
             // marginBottom: 10,
@@ -247,7 +264,7 @@ const Podium = () => {
             style={{ width: 460, height: 180, top: 122, position: "relative" }}
             source={require("../assets/image/podium.png")}
           />
-        </View> */}
+        </View> 
     </View>
   )
 }
