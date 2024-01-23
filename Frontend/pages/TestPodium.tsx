@@ -1,114 +1,28 @@
-import React, { useState, useEffect } from "react";
+import LottieView from "lottie-react-native";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { initializeSocket } from "../utils/socket";
-import Button from "../components/ButtonWithLogo";
-
-const Podium = () => {
+const TestPodium = () => {
   const socket = initializeSocket();
   const navigate = useNavigation();
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    socket.emit("user", {score: 0});
-    socket.on("user", (user) => {
-      setData(user.sort((a:any, b:any) => b.score - a.score));
-    })
-
-    socket.emit('gameEnd');
-    socket.on('gameEnd', () => {
-    })
-
-    return () => {
-      socket.on('disconnect', () => {
-        socket.off('gameEnd');
-        socket.off('getQuest');
-        socket.off('user');
-        socket.off('joinLobby');
-        socket.off('disconnect');
-      })
-    }
-  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
 
       <View style={{ alignItems: "center" }}>
-          <Text style={{ color: "white", fontSize: 35, fontWeight: "bold", marginTop: 30 }}>Congratulations!</Text>
 
-          {data.length !== 0 &&
-            data.map((user:any, index) => (
-              <>
-                {index == 0 && (
-                  <View
-                    style={{
-                      marginTop: 20,
-                      backgroundColor: "#F4CE14",
-                      paddingHorizontal: 40,
-                      paddingVertical: 20,
-                      borderRadius: 10,
-                      marginBottom: 13,
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 20,
-                    }}
-                  >
-                    <Image
-                      source={user.avatar}
-                      style={{
-                        width: 130,
-                        height: 130,
-                        borderRadius: 65,
-                        borderColor: "white",
-                        borderWidth: 2,
-                      }}
-                    />
-                    <Text style={styles.nameText}>{user.name}</Text>
-                  </View>
-                )}
-
-                {index !== 0 && (
-                  <View style={[styles.optionButton]}>
-                    <Image
-                      source={user.avatar}
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 100,
-                        marginRight: 20,
-                        borderColor: "white",
-                        borderWidth: 2,
-                      }}
-                    />
-                    <View style={{ marginLeft: 5 }}>
-                      <Text style={styles.optionText}>{user.name}</Text>
-                      <Text style={styles.scoreText}>Score: {user.score}</Text>
-                    </View>
-                  </View>
-                )}
-              </>
-            ))}
-            <View>
-              <TouchableOpacity
-                onPress={() => navigate.navigate("StartGame" as never)}
-              >
-                <Text>Back to Home</Text>
-              </TouchableOpacity>
-            </View>
+        <View style={{ alignItems: "center", position: "relative", top: 80 }}>
+          <Image
+            style={{ width: 425, height: 400, position: "relative" }}
+            source={require("../assets/image/awards.png")}
+          />
         </View>
 
-      {/* <View style={{ alignItems: "center" }}>
-        <View
-          style={{
-            // marginBottom: 10,
-            alignItems: "center",
-            top: 370,
-            marginLeft: -240,
-          }}
-        >
-          <Image
+        <View style={{ alignItems: "center", top: -200 }}>
+          {/* win 2  */}
+          <View
             style={{
               alignItems: "center",
               top: 44,
@@ -129,7 +43,7 @@ const Podium = () => {
                   width: 120,
                   height: 120,
                 }}
-                source={require("../assets/avatar2.png")}
+                source={require("../assets/avatar1.png")}
               />
             </View>
             <View style={{ margin: -100, top: 130 }}>
@@ -141,7 +55,7 @@ const Podium = () => {
                   color: "white",
                 }}
               >
-                Bambang
+                ke 2
               </Text>
               <Text
                 style={{
@@ -155,6 +69,8 @@ const Podium = () => {
               </Text>
             </View>
           </View>
+
+          {/* win 1  */}
           <View
             style={{
               alignItems: "center",
@@ -188,7 +104,7 @@ const Podium = () => {
                   color: "white",
                 }}
               >
-                Ucok (You)
+                ke 1
               </Text>
               <Text
                 style={{
@@ -198,10 +114,12 @@ const Podium = () => {
                   color: "white",
                 }}
               >
-                1800
+                2000
               </Text>
             </View>
           </View>
+
+          {/* win 3  */}
           <View
             style={{
               alignItems: "center",
@@ -223,7 +141,7 @@ const Podium = () => {
                   width: 120,
                   height: 120,
                 }}
-                source={require("../assets/avatar3.png")}
+                source={require("../assets/avatar2.png")}
               />
             </View>
             <View style={{ margin: 0, top: 30 }}>
@@ -235,7 +153,7 @@ const Podium = () => {
                   color: "white",
                 }}
               >
-                Putri
+                ke 3
               </Text>
               <Text
                 style={{
@@ -245,23 +163,29 @@ const Podium = () => {
                   color: "white",
                 }}
               >
-                1020
+                1222
               </Text>
             </View>
           </View>
         </View>
+
+        <View style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigate.navigate("StartGame" as never)}
+          >
+            <LottieView
+              source={require("../assets/lottivew/back.json")}
+              autoPlay
+              loop
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-        <View style={{ alignItems: "center", position: "relative" }}>
-          <Image
-            style={{ width: 460, height: 180, top: 122, position: "relative" }}
-            source={require("../assets/image/podium.png")}
-          />
-        </View> */}
     </View>
   );
 };
 
-export default Podium;
+export default TestPodium;
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
@@ -278,7 +202,13 @@ const styles = StyleSheet.create({
     width: 300,
     alignItems: "center",
   },
-
+  backButton: {
+    position: "absolute",
+    top: 500,
+    height: 120,
+    width: 120,
+    // left: -100,
+  },
   optionText: {
     color: "black",
     fontSize: 20,

@@ -1,3 +1,5 @@
+
+
 import React from "react"
 import { Image, View, StyleSheet, TouchableOpacity, Text } from "react-native"
 import LottieView from "lottie-react-native"
@@ -5,7 +7,7 @@ import usePlay from "../hooks/usePlay"
 import { ProgressBar, MD3Colors } from "react-native-paper"
 import { jwtDecode } from "jwt-decode"
 
-const Question = () => {
+const TestQuestion = () => {
   const { user, selectOption, question, choices, handleAnswer, index } = usePlay()
   const token = localStorage.getItem("user") + ""
   const { avatar } = jwtDecode<any>(token)
@@ -49,7 +51,7 @@ const Question = () => {
         }}
       >
         {/* {timer < 10 ? `0${timer}` : timer} */}
-        {question.time}
+       12 second
 
       </Text>
       <View
@@ -62,7 +64,7 @@ const Question = () => {
       >
         <Image
           style={styles.imageQuestion}
-          source={{uri:question.image_question}}
+          source={require("../assets/content11.jpeg")}
         />
         <View style={styles.optionsContainer}>
         {choices.map((option) => (
@@ -98,14 +100,16 @@ const Question = () => {
             </Text>
             {selectOption == question[option] && (
               <Image
-              source={{ uri: avatar }}
+            //   source={{ uri: avatar }}
               style={styles.optionImage}
+              source={require("../assets/content11.jpeg")}
               />
             )}
             {selectOption == question[option] && question.time === 0 && (
               <Image
-              source={{ uri: user.avatar }}
+            //   source={{ uri: user.avatar }}
               style={styles.optionImage}
+              source={require("../assets/content11.jpeg")}
               />
             )}
           </TouchableOpacity>
@@ -132,25 +136,25 @@ const Question = () => {
   )
 }
 
-export default Question
+export default TestQuestion
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
     width: "100%",
     height: "100%",
   },
-  // listQuestion: {
-  //   backgroundColor: "#FFFFFF",
-  //   padding: 10,
-  //   width: 250,
-  //   height: 40,
-  //   borderRadius: 10,
-  //   marginTop: 10,
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   position: "relative",
-  // },
+//   listQuestion: {
+//     backgroundColor: "#FFFFFF",
+//     padding: 10,
+//     width: 250,
+//     height: 40,
+//     borderRadius: 10,
+//     marginTop: 10,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     position: "relative",
+//   },
   // nameQuestion: {
   //   flex: 1,
   //   fontSize: 16,
@@ -181,6 +185,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+   
+
   },
   selectedAnswer: {
     backgroundColor: "blue",

@@ -11,7 +11,10 @@ import StartGame from "./pages/StartGame";
 
 import FindMatch from "./pages/FindMatch";
 import Question from "./pages/Question";
-import Podium from "./pages/Podium";
+import PodiumWinner from "./pages/PodiumWinner";
+import TestFindmatch from "./pages/TestFindmatch";
+import TestPodium from "./pages/TestPodium";
+import TestQuestion from "./pages/TestQuestion";
 // import { store } from "./redux/store";
 // import { Provider } from "react-redux";
 const Stack = createStackNavigator();
@@ -20,7 +23,7 @@ const App = () => {
     <>
       {/* <Provider store={store}> */}
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="LandingPage">
+        <Stack.Navigator initialRouteName="SplashScreen">
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -51,9 +54,25 @@ const App = () => {
             component={Question}
             options={{ headerShown: false }}
           />
+
           <Stack.Screen
-            name="Podium"
-            component={Podium}
+            name="PodiumWinner"
+            component={PodiumWinner}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TestFindmatch"
+            component={TestFindmatch}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TestPodium"
+            component={TestPodium}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TestQuestion"
+            component={TestQuestion}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

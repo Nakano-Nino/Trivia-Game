@@ -7,75 +7,110 @@ import { initializeSocket } from "../utils/socket";
 import { FlatList } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
 
-interface DecodedToken {
-  avatar: string;
-  name: string;
-  diamond: string;
-  email: string;
-}
-
-const FindMatch = () => {
-  const navigate = useNavigation();
-  const socket = initializeSocket();
+const TestFindmatch = () => {
   const [data, setData] = useState<
     { name: string; avatar: string; id: string }[]
   >([]);
   const [time, setTime] = useState(10);
   const token = localStorage.getItem("user") + "";
-  const { avatar, name } = jwtDecode<DecodedToken>(token);
-
-  const renderItem = ({ item }: any) => (
-    // <View style={styles.table}>
-    <View style={styles.avatarContainer}>
-      <Image source={item.avatar} style={styles.avatarImage} />
-      <Text style={styles.avatarName}>{item.name}</Text>
-    </View>
-    // </View>
-  );
-
-  useEffect(() => {
-    socket.connect();
-    return () => {
-      socket.disconnect();
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    if (name !== "") {
-      socket.emit("joinLobby", {
-        name: name,
-        avatar: avatar,
-      });
-
-      socket.on("joinLobby", (user, timeout) => {
-        setTime(timeout);
-
-        if (user === "start") {
-          setTimeout(() => {
-            navigate.navigate("Question" as never);
-          }, 3000);
-          return;
-        }
-        setData(user);
-      });
-    }
-  }, [name]);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
+      <View style={styles.table}></View>
       <View>
         <TouchableOpacity
           style={styles.buttonClose}
           // onPress={toggleModalDiamond}
         >
-          <LottieView
-            source={require("../assets/lottivew/backArrow.json")}
-            autoPlay
-            loop
-          />
+          {/* <FontAwesome
+            style={styles.buttonCloseText}
+            name="times"
+            size={24}
+            color="black"
+            width={100}
+          /> */}
+                  <LottieView
+          source={require("../assets/lottivew/backArrow.json")}
+          autoPlay
+          loop
+        />
         </TouchableOpacity>
       </View>
+
+{/* image */}
+      <View>
+        <View
+          style={{
+            flexDirection: "row", // Set the direction to row
+            alignItems: "center", // Center items vertically
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            borderRadius: 10,
+            width: 300,
+            paddingBottom: 6,
+            marginVertical: 10, // Add margin for spacing
+          }}
+        >
+          <Image
+            style={{
+              width: 70,
+              height: 70,
+              top: 4,
+              left: 4,
+              borderRadius: 50,
+            }}
+            source={require("../assets/avatar1.png")}
+          />
+          <Text
+            style={{
+              color: "black",
+              fontSize: 18,
+              fontWeight: "bold",
+              marginLeft: 13,
+            }}
+          >
+            bangbang
+          </Text>
+        </View>
+      </View>
+      <View>
+        <View
+          style={{
+            flexDirection: "row", // Set the direction to row
+            alignItems: "center", // Center items vertically
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            borderRadius: 10,
+            width: 300,
+            paddingBottom: 8,
+            marginVertical: 10, // Add margin for spacing
+          }}
+        >
+          <Image
+            style={{
+              width: 70,
+              height: 70,
+              top: 4,
+              left: 4,
+              borderRadius: 50,
+            }}
+            source={require("../assets/avatar1.png")}
+          />
+
+          <Text
+            style={{
+              color: "black",
+              fontSize: 18,
+              fontWeight: "bold",
+              marginLeft: 13,
+            }}
+          >
+            bangbang
+          </Text>
+        </View>
+      </View>
+
+      {/* image end */}
+
       <View
         style={{
           flex: 1,
@@ -93,19 +128,12 @@ const FindMatch = () => {
         <Text style={{ fontSize: 30, fontWeight: "bold", color: "white" }}>
           {data.length} / 4
         </Text>
-        <FlatList
-          data={data}
-          horizontal={false}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ marginTop: 30 }}
-        />
       </View>
     </View>
   );
 };
 
-export default FindMatch;
+export default TestFindmatch;
 
 const styles = StyleSheet.create({
   background: {
@@ -147,7 +175,7 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     padding: 1,
-    backgroundColor: "White",
+    backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
     height: 30,
@@ -164,27 +192,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: 10,
     marginTop: 20,
-  },
-  avatarContainer: {
-    flexDirection: "row", // Set the direction to row
-    alignItems: "center", // Center items vertically
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
-    borderRadius: 10,
-    width: 300,
-    paddingBottom: 8,
-    marginVertical: 10,
-  },
-  avatarImage: {
-    width: 70,
-    height: 70,
-    top: 4,
-    left: 4,
-    borderRadius: 50,
-  },
-  avatarName: {
-    color: "black",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginLeft: 13,
   },
 });
