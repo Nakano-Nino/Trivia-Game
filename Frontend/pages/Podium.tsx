@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { initializeSocket } from "../utils/socket"
-import Button from "../components/ButtonWithLogo";
+import Button from "../components/ButtonWithLogo"
 
 const Podium = () => {
   const socket = initializeSocket()
@@ -15,20 +15,19 @@ const Podium = () => {
       setData(user.sort((a: any, b: any) => b.score - a.score))
     })
 
-    socket.emit('gameEnd');
-    socket.on('gameEnd', () => {
-    })
+    socket.emit("gameEnd")
+    socket.on("gameEnd", () => {})
 
     return () => {
-      socket.on('disconnect', () => {
-        socket.off('gameEnd');
-        socket.off('getQuest');
-        socket.off('user');
-        socket.off('joinLobby');
-        socket.off('disconnect');
+      socket.on("disconnect", () => {
+        socket.off("gameEnd")
+        socket.off("getQuest")
+        socket.off("user")
+        socket.off("joinLobby")
+        socket.off("disconnect")
       })
     }
-  }, []);
+  }, [])
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -95,176 +94,18 @@ const Podium = () => {
                     <Text style={styles.optionText}>{user.name}</Text>
                     <Text style={styles.scoreText}>Score: {user.score}</Text>
                   </View>
-                )}
-              </>
-            ))}
-            <View>
-              <TouchableOpacity
-                onPress={() => navigate.navigate("StartGame" as never)}
-              >
-                <Text>Back to Home</Text>
-              </TouchableOpacity>
-            </View>
-        </View>
-
-      <View style={{ alignItems: "center" }}>
-        <View
-          style={{
-            // marginBottom: 10,
-            alignItems: "center",
-            top: 370,
-            marginLeft: -240,
-          }}
-        >
-          <Image
-            style={{
-              alignItems: "center",
-              top: 44,
-              marginLeft: -285,
-            }}
+                </View>
+              )}
+            </>
+          ))}
+        <View>
+          <TouchableOpacity
+            onPress={() => navigate.navigate("StartGame" as never)}
           >
-            <View
-              style={{
-                alignItems: "center",
-                width: 120,
-                height: 120,
-                top: 10,
-              }}
-            >
-              <Image
-                style={{
-                  top: 10,
-                  width: 120,
-                  height: 120,
-                }}
-                source={require("../assets/avatar2.png")}
-              />
-            </View>
-            <View style={{ margin: -100, top: 130 }}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                Bambang
-              </Text>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                1220
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              alignItems: "center",
-              top: 6,
-              marginLeft: 2,
-            }}
-          >
-            <View
-              style={{
-                alignItems: "center",
-                width: 120,
-                height: 120,
-                top: 10,
-              }}
-            >
-              <Image
-                style={{
-                  top: 10,
-                  width: 140,
-                  height: 140,
-                }}
-                source={require("../assets/avatar1.png")}
-              />
-            </View>
-            <View style={{ margin: 0, top: 70 }}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                Ucok (You)
-              </Text>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                1800
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              alignItems: "center",
-              top: -130,
-              marginLeft: 290,
-            }}
-          >
-            <View
-              style={{
-                alignItems: "center",
-                width: 120,
-                height: 120,
-                top: 10,
-              }}
-            >
-              <Image
-                style={{
-                  top: 10,
-                  width: 120,
-                  height: 120,
-                }}
-                source={require("../assets/avatar3.png")}
-              />
-            </View>
-            <View style={{ margin: 0, top: 30 }}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                Putri
-              </Text>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                1020
-              </Text>
-            </View>
-          </View>
+            <Text>Back to Home</Text>
+          </TouchableOpacity>
         </View>
       </View>
-        <View style={{ alignItems: "center", position: "relative" }}>
-          <Image
-            style={{ width: 460, height: 180, top: 122, position: "relative" }}
-            source={require("../assets/image/podium.png")}
-          />
-        </View> 
     </View>
   )
 }
@@ -295,7 +136,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
     textShadowOffset: { width: 1, height: 1 },
   },
-
   iconText: {
     width: 180,
     height: 180,
