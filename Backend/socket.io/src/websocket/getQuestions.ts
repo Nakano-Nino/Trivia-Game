@@ -5,30 +5,32 @@ import { lobbies } from "./lobby";
 export default async function getQuestions(io: Server, socket:  Socket) {
     try {
         socket.on('getQuest', message => {
-            if (!lobbies.room_1.isEmited) {
-                lobbies.room_1.isEmited = true;
-                lobbies.room_1.isFinished = false;
+            const roomId = message.roomId;
+
+            if (new Object(lobbies[roomId]).hasOwnProperty("isEmited") && !lobbies[roomId].isEmited) {
+                lobbies[roomId].isEmited = true;
+                lobbies[roomId].isFinished = false;
                 const index = message.index;
 
-                if (message.index == lobbies.room_1.questions.length) {
-                    lobbies.room_1.isEmited = false;
-                    lobbies.room_1.isFinished = true;
-                    lobbies.room_1.questions = []
-                    io.to('room_1').emit('getQuest', false);
+                if (!lobbies[roomId].questions[index]) {
+                    lobbies[roomId].isEmited = false;
+                    lobbies[roomId].isFinished = true;
+                    lobbies[roomId].questions = [];
+                    io.to(roomId).emit('getQuest', false);
                     return;
                 }
 
-                const quest : IQuest = { ...lobbies.room_1.questions[+index], time: 5 };
+                const question: IQuest & { time: number } = { ...lobbies[roomId].questions[+index], time: 10};
 
-                const interval = setInterval(() => {
-                    io.to('room_1').emit('getQuest', quest);
+                const interval =  setInterval(() => {
+                    io.to(roomId).emit('getQuest', question);
 
-                    if ( quest.time == 0 ) {
-                        lobbies.room_1.isEmited = false;
+                    if (question.time == 0) {
+                        lobbies[roomId].isEmited = false;
                         clearInterval(interval);
                     }
-                    quest.time -= 1;
-                }, 1000)
+                    question.time -= 1;
+                }, 1000);
             }
         });
     } catch (error) {

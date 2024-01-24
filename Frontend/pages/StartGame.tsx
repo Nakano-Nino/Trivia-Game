@@ -16,9 +16,10 @@ import { jwtDecode } from "jwt-decode"
 import { API } from "../utils/API"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as WebBrowser from "expo-web-browser"
-import { useNavigation } from "@react-navigation/native"
+import { useIsFocused, useNavigation } from "@react-navigation/native"
 import { Alert } from "react-native"
 import LottieView from "lottie-react-native"
+import { initializeSocket } from "../utils/socket"
 interface DecodedToken {
   avatar: string
   name: string
@@ -58,7 +59,8 @@ const StartGame = () => {
   const initialUserDiamond = parseInt(diamond, 10)
   const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
 
-  const navigate = useNavigation()
+  const navigate = useNavigation();
+  const isFocused = useIsFocused();
 
   const toggleModalDiamond = () => {
     setModalDiamond(!isModalDiamond)
@@ -66,6 +68,17 @@ const StartGame = () => {
   const toggleProfileEdit = () => {
     setModalVisible(!isModalVisible)
   }
+
+  const socket = initializeSocket()
+
+  const clearLobby = async () => {
+    await AsyncStorage.removeItem('roomId')
+  }
+
+  useEffect(() => {
+    clearLobby()
+    socket.emit('clear', true)
+  }, [isFocused])
 
   useEffect(() => {
     const fetchDiamondOptions = async () => {
