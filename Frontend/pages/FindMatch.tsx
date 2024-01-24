@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { jwtDecode } from "jwt-decode";
 import { initializeSocket } from "../utils/socket";
 import { FlatList } from "react-native-gesture-handler";
 import LottieView from "lottie-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface DecodedToken {
   avatar: string;
@@ -47,7 +47,8 @@ const FindMatch = () => {
         avatar: avatar,
       });
 
-      socket.on("joinLobby", (user, timeout) => {
+      socket.on("joinLobby", async (user, timeout, roomId) => {
+        await AsyncStorage.setItem('roomId', roomId);
         setTime(timeout);
 
         if (user === "start") {

@@ -3,12 +3,12 @@ import { Image, View, StyleSheet, TouchableOpacity, Text } from "react-native"
 import LottieView from "lottie-react-native"
 import usePlay from "../hooks/usePlay"
 import { ProgressBar, MD3Colors } from "react-native-paper"
-import { jwtDecode } from "jwt-decode"
+// import { jwtDecode } from "jwt-decode"
 
 const Question = () => {
-  const { user, selectOption, question, choices, handleAnswer, index } = usePlay()
-  const token = localStorage.getItem("user") + ""
-  const { avatar } = jwtDecode<any>(token)
+  const { user, selectOption, question, choices, handleAnswer, index, userAnswer } = usePlay()
+  // const token = localStorage.getItem("user") + ""
+  // const { avatar } = jwtDecode<any>(token)
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -65,14 +65,14 @@ const Question = () => {
           source={{uri:question.image_question}}
         />
         <View style={styles.optionsContainer}>
-        {choices.map((option) => (
+        {choices.map((option, index) => (
           <TouchableOpacity
-            key={option}
+            key={option + index}
             style={[
               styles.optionButton,
               selectOption == question[option] && styles.selectedAnswer,
 
-              selectOption == question[option] && question.time == 0
+              selectOption == question[option] && question.time === 0
                 ? selectOption == question.answer
                   ? {
                     backgroundColor: "lime",
@@ -83,11 +83,11 @@ const Question = () => {
                     borderColor: "red",
                   }
                 : {
-                  backgroundColor: "gray"
+                  backgroundColor: "aqua"
                 },
             ]}
             disabled={question.time === 0}
-            onPress={() => handleAnswer(question[option])}
+            onPress={() => handleAnswer(question[option], option)}
           >
             <Text style={[
               styles.optionText,
@@ -96,18 +96,23 @@ const Question = () => {
             >
               {option.toUpperCase()} {question[option]}
             </Text>
-            {selectOption == question[option] && (
-              <Image
-              source={{ uri: avatar }}
-              style={styles.optionImage}
-              />
-            )}
-            {selectOption == question[option] && question.time === 0 && (
+            {question.time !== 0 && selectOption == question[option] && (
               <Image
               source={{ uri: user.avatar }}
               style={styles.optionImage}
               />
             )}
+
+            {question.time === 0 && userAnswer.map((data:any) => (
+              <>
+              {data.answer == option && (
+                <Image
+                source={{ uri: data.avatar }}
+                style={styles.optionImage}
+                />
+              )}
+              </>
+            ))}
           </TouchableOpacity>
         ))}
 

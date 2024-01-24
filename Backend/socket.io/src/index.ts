@@ -31,10 +31,6 @@ io.use((socket, next) => {
 io.on('connection', socket => {
     console.log(`User connected: ${socket.id}`);
     routeSocket(io, socket);
-
-    socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.id}`);
-    });
 });
 server.listen(port, "127.0.0.1", () => {
     console.log(`Listening on http://localhost:${port}`);

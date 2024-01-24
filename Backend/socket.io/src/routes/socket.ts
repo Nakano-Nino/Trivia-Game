@@ -9,9 +9,7 @@ export default async function routeSocket(io: Server, socket: Socket) {
     await lobby(io, socket);
 
     socket.on('disconnect', () => {
-        socket.off('getQuest', getQuestions);
-        socket.off('user', user);
-        socket.off('joinLobby', lobby);
         socket.send('Bye!');
+        console.log(`User disconnected: ${socket.id}`);
     })
 }

@@ -37,7 +37,7 @@ export let lobbies = {
 
 export default async function lobby(io: Server, socket: Socket) {
     socket.on("joinLobby", async message => {
-        let currentLobby = lobbyGame.roomId;
+        let currentLobby = ""
 
         if (!message.name || !message.avatar) {
             socket.emit('joinLobby', {
@@ -46,19 +46,29 @@ export default async function lobby(io: Server, socket: Socket) {
             return;
         }
 
-        for (const key in lobbies) {
-            console.log("keyID:", key, lobbies[key].users.length, "players");
-            if (lobbies[key].users.length > 3) {
-                console.log("keyID:", lobbies[key].users.length, "players full");
-                const newLobby = getLobby();
-                lobbies[newLobby.roomId] = {
-                    ...newLobby,
-                };
-                currentLobby = newLobby.roomId;
+        const lobbyLength =  Object.keys(lobbies).length
+        let currentLength = 1;
 
-                break;
+        for (const key in lobbies) {
+            console.log("keyID:", key, 'has', lobbies[key].users.length, "players");
+            if (lobbies[key].users.length === 4) {
+                if (lobbyLength - currentLength > 0) {
+                    currentLength += 1;
+                    continue;
+                } else {
+                    console.log('Lobby is full, creating new lobby');
+                    const newLobby = getLobby();
+                    lobbies[newLobby.roomId] = {
+                        ...newLobby,
+                    };
+                    currentLobby = newLobby.roomId;
+                    break;
+                }
             }
+            currentLobby = key;
         }
+
+        console.log("Current lobby: ", currentLobby, "has", lobbies[currentLobby].users.length, "players");
 
         if (lobbies[currentLobby].questions.length == 0) {
             lobbies[currentLobby].questions = await fetchQuestions();
@@ -73,27 +83,32 @@ export default async function lobby(io: Server, socket: Socket) {
 
         socket.join(lobbies[currentLobby].roomId);
         const interval = setInterval(() => {
-            if (lobbies.room_1.timeout < 0) {
+            if (lobbies[currentLobby].timeout < 0) {
                 clearInterval(interval);
                 return;
             }
 
-            if (lobbies.room_1.timeout <= 3) {
-                if (lobbies.room_1.users.length < 4) {
-                    lobbies.room_1.users.push({
-                        name: `bot-${lobbies.room_1.users.length + 1}`,
+            if (lobbies[currentLobby].timeout <= 3) {
+                if (lobbies[currentLobby].users.length < 4) {
+                    lobbies[currentLobby].users.push({
+                        name: `bot-${lobbies[currentLobby].users.length + 1}`,
                         avatar: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                        id: `bot-${lobbies.room_1.users.length + 1}`,
+                        id: Math.random().toString(),
                         score: 0,
                     });
                 }
             }
-            if (lobbies.room_1.users.length == 4) {
-                io.to("room_1").emit('joinLobby', 'start');
+            if (lobbies[currentLobby].users.length == 4) {
+                clearInterval(interval);
+                io.to(lobbies[currentLobby].roomId).emit('joinLobby', 'start');
             }
-
-            io.to('room_1').emit("joinLobby", lobbies.room_1.users, lobbies.room_1.timeout);
-            lobbies.room_1.timeout -= 1;
+            
+            io.to(lobbies[currentLobby].roomId).emit('joinLobby',
+            lobbies[currentLobby].users,
+            lobbies[currentLobby].timeout,
+            lobbies[currentLobby].roomId
+            );
+            lobbies[currentLobby].timeout -= 1;
         }, 1000)
     });
 }
