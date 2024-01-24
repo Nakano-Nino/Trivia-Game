@@ -3,31 +3,26 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { initializeSocket } from "../utils/socket";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const PodiumWinner = () => {
   const socket = initializeSocket();
   const navigate = useNavigation();
   const [data, setData] = useState([]);
-  console.log("info user:", data);
+  const [roomId, setRoomId] = useState("");
+  // console.log("info user:", data);
+
+  const getRoomId = async () => {
+    const roomId:any = await AsyncStorage.getItem("roomId");
+    setRoomId(roomId);
+  }
 
   useEffect(() => {
-    socket.emit("user", { score: 0 });
-    socket.on("user", (user) => {
-      setData(user.sort((a: any, b: any) => b.score - a.score));
-    });
-
-    socket.emit("gameEnd");
-    socket.on("gameEnd", () => {});
-
-    return () => {
-      socket.on("disconnect", () => {
-        socket.off("gameEnd");
-        socket.off("getQuest");
-        socket.off("user");
-        socket.off("joinLobby");
-        socket.off("disconnect");
-      });
-    };
-  }, []);
+    getRoomId();
+    socket.on('finish', async (user) => {
+      setData(user.sort((a:any, b:any) => b.score - a.score));
+      await AsyncStorage.removeItem("roomId");
+    })
+  }, [roomId]);
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -93,7 +88,7 @@ const PodiumWinner = () => {
                     >
                       {user.name}
                     </Text>
-                    <Text
+                    <Text 
                       style={{
                         fontSize: 20,
                         fontWeight: "bold",

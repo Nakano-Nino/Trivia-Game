@@ -1,6 +1,8 @@
 import { Server, Socket } from "socket.io";
-import { IQuest } from "../interface/IQuest";
 import { API } from "../lib/API";
+import { v4 as uuidv4 } from 'uuid';
+import { IQuest } from "../interface/IQuest";
+import { Lobby } from "../interface/Lobby";
 
 const fetchQuestions = async () => {
     const res = await API.get("/api/v1/get-questions", {
@@ -26,69 +28,98 @@ function shuffleArray(array: any) {
     return array;
 }
 
-export const lobbies = {
-    room_1: {
-        questions: [],
-        users: [],
-        isEmited: false,
-        isFinished: true,
-        timeout: 10
+let lobbyGame = getLobby();
+export let lobbies = {
+    [lobbyGame.roomId]: {
+        ...lobbyGame,
     },
 };
 
 export default async function lobby(io: Server, socket: Socket) {
     socket.on("joinLobby", async message => {
-        if (lobbies["room_1"].questions.length == 0) {
-            lobbies["room_1"].questions = (await fetchQuestions());
-        }
-        
-        if(!message.name || !message.avatar) {
+        let currentLobby = ""
+
+        if (!message.name || !message.avatar) {
             socket.emit('joinLobby', {
-                message: "Please provide name and avatar"
-            })
+                message: "Please provide name and avatar",
+            });
             return;
         }
 
-        lobbies.room_1.users.push({
+        const lobbyLength =  Object.keys(lobbies).length
+        let currentLength = 1;
+
+        for (const key in lobbies) {
+            console.log("keyID:", key, 'has', lobbies[key].users.length, "players");
+            if (lobbies[key].users.length === 4) {
+                if (lobbyLength - currentLength > 0) {
+                    currentLength += 1;
+                    continue;
+                } else {
+                    console.log('Lobby is full, creating new lobby');
+                    const newLobby = getLobby();
+                    lobbies[newLobby.roomId] = {
+                        ...newLobby,
+                    };
+                    currentLobby = newLobby.roomId;
+                    break;
+                }
+            }
+            currentLobby = key;
+        }
+
+        console.log("Current lobby: ", currentLobby, "has", lobbies[currentLobby].users.length, "players");
+
+        if (lobbies[currentLobby].questions.length == 0) {
+            lobbies[currentLobby].questions = await fetchQuestions();
+        }
+
+        lobbies[currentLobby].users.push({
             name: message.name,
             avatar: message.avatar,
             id: socket.id,
-            score: 0
+            score: 0,
         });
 
-        socket.join("room_1");
+        socket.join(lobbies[currentLobby].roomId);
         const interval = setInterval(() => {
-            if (lobbies.room_1.timeout < 0) {
+            if (lobbies[currentLobby].timeout < 0) {
                 clearInterval(interval);
                 return;
             }
 
-            if (lobbies.room_1.timeout <= 3) {
-                if (lobbies.room_1.users.length < 4) {
-                    lobbies.room_1.users.push({
-                        name: `bot-${lobbies.room_1.users.length + 1}`,
+            if (lobbies[currentLobby].timeout <= 3) {
+                if (lobbies[currentLobby].users.length < 4) {
+                    lobbies[currentLobby].users.push({
+                        name: `bot-${lobbies[currentLobby].users.length + 1}`,
                         avatar: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                        id: `bot-${lobbies.room_1.users.length + 1}`,
+                        id: Math.random().toString(),
                         score: 0,
                     });
                 }
             }
-            if (lobbies.room_1.users.length == 4) {
-                io.to("room_1").emit('joinLobby', 'start');
+            if (lobbies[currentLobby].users.length == 4) {
+                clearInterval(interval);
+                io.to(lobbies[currentLobby].roomId).emit('joinLobby', 'start');
             }
-
-            io.to('room_1').emit("joinLobby", lobbies.room_1.users, lobbies.room_1.timeout);
-            lobbies.room_1.timeout -= 1;
+            
+            io.to(lobbies[currentLobby].roomId).emit('joinLobby',
+            lobbies[currentLobby].users,
+            lobbies[currentLobby].timeout,
+            lobbies[currentLobby].roomId
+            );
+            lobbies[currentLobby].timeout -= 1;
         }, 1000)
     });
+}
 
-    socket.on('gameEnd', () => {
-        lobbies.room_1.questions = [];
-        lobbies.room_1.users = [];
-        lobbies.room_1.isEmited = false;
-        lobbies.room_1.isFinished = true;
-        lobbies.room_1.timeout = 10;
-
-        io.to('room_1').emit('gameReset')
-    });
+export function getLobby(): Lobby {
+    return {
+        isEmited: false,
+        isFinished: false,
+        questions: [],
+        users: [],
+        timeout: 10,
+        roomId: uuidv4(),
+    }
 }

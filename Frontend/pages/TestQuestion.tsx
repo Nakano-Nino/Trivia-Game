@@ -89,7 +89,7 @@ const TestQuestion = () => {
                 },
             ]}
             disabled={question.time === 0}
-            onPress={() => handleAnswer(question[option])}
+            // onPress={() => handleAnswer(question[option])}
           >
             <Text style={[
               styles.optionText,

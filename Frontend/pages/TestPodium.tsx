@@ -1,11 +1,11 @@
-import LottieView from "lottie-react-native";
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { initializeSocket } from "../utils/socket";
+import LottieView from "lottie-react-native"
+import React, { useEffect, useState } from "react"
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import { initializeSocket } from "../utils/socket"
 const TestPodium = () => {
-  const socket = initializeSocket();
-  const navigate = useNavigation();
+  const socket = initializeSocket()
+  const navigate = useNavigation()
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -194,10 +194,10 @@ const TestPodium = () => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default TestPodium;
+export default TestPodium
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
@@ -229,7 +229,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
     textShadowOffset: { width: 1, height: 1 },
   },
-
   iconText: {
     width: 180,
     height: 180,
@@ -270,4 +269,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-});
+})
