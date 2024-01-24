@@ -1,6 +1,8 @@
 import { Server, Socket } from "socket.io";
-import { IQuest } from "../interface/IQuest";
 import { API } from "../lib/API";
+import { v4 as uuidv4 } from 'uuid';
+import { IQuest } from "../interface/IQuest";
+import { Lobby } from "../interface/Lobby";
 
 const fetchQuestions = async () => {
     const res = await API.get("/api/v1/get-questions", {
@@ -26,37 +28,50 @@ function shuffleArray(array: any) {
     return array;
 }
 
-export const lobbies = {
-    room_1: {
-        questions: [],
-        users: [],
-        isEmited: false,
-        isFinished: true,
-        timeout: 10
+let lobbyGame = getLobby();
+export let lobbies = {
+    [lobbyGame.roomId]: {
+        ...lobbyGame,
     },
 };
 
 export default async function lobby(io: Server, socket: Socket) {
     socket.on("joinLobby", async message => {
-        if (lobbies["room_1"].questions.length == 0) {
-            lobbies["room_1"].questions = (await fetchQuestions());
-        }
-        
-        if(!message.name || !message.avatar) {
+        let currentLobby = lobbyGame.roomId;
+
+        if (!message.name || !message.avatar) {
             socket.emit('joinLobby', {
-                message: "Please provide name and avatar"
-            })
+                message: "Please provide name and avatar",
+            });
             return;
         }
 
-        lobbies.room_1.users.push({
+        for (const key in lobbies) {
+            console.log("keyID:", key, lobbies[key].users.length, "players");
+            if (lobbies[key].users.length > 3) {
+                console.log("keyID:", lobbies[key].users.length, "players full");
+                const newLobby = getLobby();
+                lobbies[newLobby.roomId] = {
+                    ...newLobby,
+                };
+                currentLobby = newLobby.roomId;
+
+                break;
+            }
+        }
+
+        if (lobbies[currentLobby].questions.length == 0) {
+            lobbies[currentLobby].questions = await fetchQuestions();
+        }
+
+        lobbies[currentLobby].users.push({
             name: message.name,
             avatar: message.avatar,
             id: socket.id,
-            score: 0
+            score: 0,
         });
 
-        socket.join("room_1");
+        socket.join(lobbies[currentLobby].roomId);
         const interval = setInterval(() => {
             if (lobbies.room_1.timeout < 0) {
                 clearInterval(interval);
@@ -81,14 +96,15 @@ export default async function lobby(io: Server, socket: Socket) {
             lobbies.room_1.timeout -= 1;
         }, 1000)
     });
+}
 
-    socket.on('gameEnd', () => {
-        lobbies.room_1.questions = [];
-        lobbies.room_1.users = [];
-        lobbies.room_1.isEmited = false;
-        lobbies.room_1.isFinished = true;
-        lobbies.room_1.timeout = 10;
-
-        io.to('room_1').emit('gameReset')
-    });
+export function getLobby(): Lobby {
+    return {
+        isEmited: false,
+        isFinished: false,
+        questions: [],
+        users: [],
+        timeout: 10,
+        roomId: uuidv4(),
+    }
 }
