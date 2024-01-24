@@ -11,16 +11,28 @@ const TestPodium = () => {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
 
+      <View style={{ alignItems: "center", position: "absolute", top: 50 }}>
+        <Image
+          style={{ width: 420, height: 220 }}
+          source={require("../assets/image/congratulation.png")}
+        />
+        <View style={{ alignItems: "center", position: "absolute", top: 80 }}>
+          <LottieView
+            source={require("../assets/lottivew/fireworks.json")}
+            autoPlay
+            loop
+          />
+        </View>
+      </View>
       <View style={{ alignItems: "center" }}>
-
-        <View style={{ alignItems: "center", position: "relative", top: 80 }}>
+        <View style={{ alignItems: "center", top: 180 }}>
           <Image
             style={{ width: 425, height: 400, position: "relative" }}
             source={require("../assets/image/awards.png")}
           />
         </View>
 
-        <View style={{ alignItems: "center", top: -200 }}>
+        <View style={{ alignItems: "center", top: -100 }}>
           {/* win 2  */}
           <View
             style={{
@@ -204,9 +216,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 500,
-    height: 120,
-    width: 120,
+    top: 600,
+    height: 100,
+    width: 100,
     // left: -100,
   },
   optionText: {

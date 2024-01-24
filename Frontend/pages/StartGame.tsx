@@ -443,10 +443,10 @@ const styles = StyleSheet.create({
     marginLeft: 65,
   },
   diamond: {
-    width: 45,
-    height: 45,
-    top: -63,
-    marginLeft: -18,
+    width: 30,
+    height: 30,
+    top: -57,
+    marginLeft: -11,
   },
   diamondButton: {
     backgroundColor: "#000000",
