@@ -21,17 +21,17 @@ import { Alert } from "react-native"
 import LottieView from "lottie-react-native"
 import { initializeSocket } from "../utils/socket"
 interface DecodedToken {
-  avatar: string;
-  name: string;
-  diamond: string;
-  email: string;
+  avatar: string
+  name: string
+  diamond: string
+  email: string
 }
 
 interface DiamondOption {
-  amount: number;
-  image: string;
-  price: number;
-  id: string;
+  amount: number
+  image: string
+  price: number
+  id: string
 }
 
 interface AvatarOption {
@@ -50,8 +50,12 @@ const StartGame = () => {
   const [avatarUser, setAvatarUser] = useState({ avatar })
   const [diamondOptions, setDiamondOptions] = useState<DiamondOption[]>([])
   const [avatarOptions, setAvatarOptions] = useState<AvatarOption[]>([])
-  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(null)
-  const [selectedDiamond, setSelectedDiamond] = useState<DiamondOption | null>(null)
+  const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(
+    null
+  )
+  const [selectedDiamond, setSelectedDiamond] = useState<DiamondOption | null>(
+    null
+  )
   const initialUserDiamond = parseInt(diamond, 10)
   const [userDiamond, setUserDiamond] = useState(initialUserDiamond)
 
@@ -59,11 +63,11 @@ const StartGame = () => {
   const isFocused = useIsFocused();
 
   const toggleModalDiamond = () => {
-    setModalDiamond(!isModalDiamond);
-  };
+    setModalDiamond(!isModalDiamond)
+  }
   const toggleProfileEdit = () => {
-    setModalVisible(!isModalVisible);
-  };
+    setModalVisible(!isModalVisible)
+  }
 
   const socket = initializeSocket()
 
@@ -83,23 +87,21 @@ const StartGame = () => {
 
         setDiamondOptions(response.data.data)
       } catch (error) {
-        console.error("Error fetching diamond options:", error);
+        console.error("Error fetching diamond options:", error)
       }
-    };
+    }
 
-    fetchDiamondOptions();
-  }, []);
+    fetchDiamondOptions()
+  }, [])
 
   useEffect(() => {
     const fetchAvatarOptions = async () => {
       try {
         const token = localStorage.getItem("user") || ""
         const { email } = jwtDecode<DecodedToken>(token)
-        const userResponse = await API.get("/api/v1/get-user",
-          {
-            params: { email }
-          }
-        )
+        const userResponse = await API.get("/api/v1/get-user", {
+          params: { email },
+        })
 
         const purchasedAvatars = userResponse.data.data.purchasedavatars
 
@@ -125,20 +127,20 @@ const StartGame = () => {
         setAvatarUser({
           ...avatarUser,
           avatar: userResponse.data.data.avatar || "",
-        });
+        })
 
-        setUserDiamond(userResponse.data.data.diamond || 0);
+        setUserDiamond(userResponse.data.data.diamond || 0)
       } catch (error) {
-        console.error("Error fetching avatar options:", error);
+        console.error("Error fetching avatar options:", error)
       }
-    };
+    }
 
-    fetchAvatarOptions();
-  }, []);
+    fetchAvatarOptions()
+  }, [])
 
   const handleBuyAvatar = async (selectedItem: AvatarOption | null) => {
     if (selectedItem) {
-      console.log("Selected Avatar:", selectedItem);
+      console.log("Selected Avatar:", selectedItem)
 
       const avatarPrice = selectedItem.price
       console.log("Avatar price:", avatarPrice)
@@ -149,13 +151,15 @@ const StartGame = () => {
             ? { ...item, purchased: true }
             : item
         )
-      );
+      )
 
       if (avatarPrice == "Purchased" || avatarPrice == 0) {
         try {
           const updateAvatarFormData = new FormData()
           updateAvatarFormData.append("avatar", selectedItem.secureurl)
-          const responseUpdateAvatar = await API.patch("/api/v1/update-user", updateAvatarFormData,
+          const responseUpdateAvatar = await API.patch(
+            "/api/v1/update-user",
+            updateAvatarFormData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",
@@ -168,23 +172,39 @@ const StartGame = () => {
 
           localStorage.setItem("user", newToken)
           setUserDiamond((prevDiamond) => {
-            const newDiamond = prevDiamond - avatarPrice
+            const priceForDiamond =
+              avatarPrice === "Purchased" ? 0 : avatarPrice
+            const newDiamond = isNaN(prevDiamond)
+              ? 0
+              : prevDiamond - priceForDiamond
             return newDiamond
           })
           setAvatarUser({
             ...avatarUser,
             avatar: selectedItem.secureurl,
           })
-          toggleProfileEdit();
+          toggleProfileEdit()
         } catch (error) {
           console.error("Error updating avatar:", error)
         }
-      } 
+      }
       if (avatarPrice != null && userDiamond >= avatarPrice) {
         try {
           const formData = new FormData()
           formData.append("name", selectedItem.name)
-          const response = await API.post("/api/v1/buy-avatar", formData,
+          const response = await API.post("/api/v1/buy-avatar", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          console.log("Response:", response)
+
+          const updateAvatarFormData = new FormData()
+          updateAvatarFormData.append("avatar", selectedItem.secureurl)
+          const responseUpdateAvatar = await API.patch(
+            "/api/v1/update-user",
+            updateAvatarFormData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",
@@ -192,26 +212,16 @@ const StartGame = () => {
               },
             }
           )
-          console.log("Response:", response)
-
-          const updateAvatarFormData = new FormData()
-          updateAvatarFormData.append("avatar", selectedItem.secureurl)
-          const responseUpdateAvatar = await API.patch("/api/v1/update-user", updateAvatarFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
 
           const newToken = responseUpdateAvatar.data.data.token
 
           localStorage.setItem("user", newToken)
           setUserDiamond((prevDiamond) => {
-            const newDiamond = prevDiamond - avatarPrice;
-            return newDiamond;
-          });
+            const newDiamond = isNaN(prevDiamond)
+              ? 0
+              : prevDiamond - avatarPrice
+            return newDiamond
+          })
           setAvatarUser({
             ...avatarUser,
             avatar: selectedItem.secureurl,
@@ -222,28 +232,29 @@ const StartGame = () => {
             await AsyncStorage.setItem(
               "diamond",
               (userDiamond - avatarPrice).toString()
-            );
+            )
           } catch (error) {
-            console.error("Error saving to AsyncStorage:", error);
+            console.error("Error saving to AsyncStorage:", error)
           }
 
-          toggleProfileEdit();
+          toggleProfileEdit()
         } catch (error) {
-          console.error("Error buying avatar:", error);
+          console.error("Error buying avatar:", error)
         }
       } else {
         Alert.alert("Error", "Diamond not enough")
       }
     }
-  };
+  }
 
   const handleBuyDiamond = async (obj: DiamondOption) => {
     if (selectedDiamond) {
-      console.log("Selected Diamond:", selectedDiamond);
+      console.log("Selected Diamond:", selectedDiamond)
     }
     try {
       const token = await AsyncStorage.getItem("user")
-      const response = await API.post("/api/v1/buy-diamond",
+      const response = await API.post(
+        "/api/v1/buy-diamond",
         {
           amount: obj.price,
           item_id: obj.id,
@@ -253,19 +264,18 @@ const StartGame = () => {
             Authorization: `bearer ${token}`,
           },
         }
-      );
-      console.log("Buy Diamond Response:", response.data);
+      )
+      console.log("Buy Diamond Response:", response.data)
 
-      WebBrowser.openBrowserAsync(response.data.data.url);
-      setModalDiamond(false);
+      WebBrowser.openBrowserAsync(response.data.data.url)
+      setModalDiamond(false)
     } catch (err) {
-      console.log("Error Topup", err);
+      console.log("Error Topup", err)
     }
   }
 
-
   const handleStartGame = () => {
-  navigate.navigate("FindMatch" as never)
+    navigate.navigate("FindMatch" as never)
   }
 
   return (
@@ -284,13 +294,13 @@ const StartGame = () => {
             source={require("../assets/adddiamondpng.png")}
           />
         </TouchableOpacity>
-<View style={styles.diamond}>
-<LottieView
-          source={require("../assets/lottivew/diamond.json")}
-          autoPlay
-          loop
-        />
-      </View>
+        <View style={styles.diamond}>
+          <LottieView
+            source={require("../assets/lottivew/diamond.json")}
+            autoPlay
+            loop
+          />
+        </View>
       </View>
       <View>
         <Image style={styles.avatar} source={{ uri: avatarUser.avatar }} />
@@ -300,10 +310,7 @@ const StartGame = () => {
         <Text style={styles.textup}>Hello, {name}</Text>
       </View>
       <TouchableOpacity style={styles.button}>
-        <Text
-          style={styles.text}
-          onPress={handleStartGame}
-        >
+        <Text style={styles.text} onPress={handleStartGame}>
           Play Game
         </Text>
       </TouchableOpacity>
@@ -334,8 +341,8 @@ const StartGame = () => {
                   <Text style={styles.listDiamond}>{option.amount}</Text>
                   <TouchableOpacity
                     onPress={() => {
-                      setSelectedDiamond(option);
-                      console.log("Selected Diamond:", option);
+                      setSelectedDiamond(option)
+                      console.log("Selected Diamond:", option)
                     }}
                   >
                     <Image
@@ -386,8 +393,8 @@ const StartGame = () => {
                   <View key={item.secureurl} style={styles.viewAvatar}>
                     <TouchableOpacity
                       onPress={() => {
-                        setSelectedAvatar(item);
-                        console.log(item);
+                        setSelectedAvatar(item)
+                        console.log(item)
                       }}
                     >
                       <Image
@@ -419,10 +426,10 @@ const StartGame = () => {
       </Modal>
       <Image style={styles.artist} source={require("../assets/artist.png")} />
     </View>
-  );
-};
+  )
+}
 
-export default StartGame;
+export default StartGame
 
 const styles = StyleSheet.create({
   container: {
@@ -682,4 +689,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex: 100,
   },
-});
+})
