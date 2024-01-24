@@ -28,10 +28,21 @@ const PodiumWinner = () => {
       <Image style={styles.background} source={require("../assets/bg2.png")} />
 
       <View style={{ alignItems: "center" }}>
-      <View style={{ alignItems: "center", position: "relative", top: 100 }}>
-          <Text style={{fontWeight: "bold", fontSize: 30, color: "white", }}>Congratulation✨</Text>
+        <View style={{ alignItems: "center", position: "absolute", top: 50 }}>
+          <Image
+            style={{ width: 420, height: 220, }}
+            source={require("../assets/image/congratulation.png")}
+          />
+          <View style={{ alignItems: "center", position: "absolute", top: 80 }}>
+            <LottieView
+              source={require("../assets/lottivew/fireworks.json")}
+              autoPlay
+              loop
+            />
+          </View>
         </View>
-        <View style={{ alignItems: "center", position: "relative", top: 80 }}>
+
+        <View style={{ alignItems: "center", position: "relative", top: 8 }}>
           <Image
             style={{ width: 425, height: 400, position: "relative" }}
             source={require("../assets/image/awards.png")}
@@ -39,7 +50,7 @@ const PodiumWinner = () => {
         </View>
         {data.length !== 0 &&
           data.map((user: any, index) => (
-            <View style={{ alignItems: "center", top : -200 }}>
+            <View style={{ alignItems: "center", top: -200 }}>
               {/* win 2  */}
               {index > 0 && index < 2 && (
                 <View
@@ -145,53 +156,52 @@ const PodiumWinner = () => {
               {/* win 3  */}
               {index > 1 && index < 3 && (
                 <View
-                style={{
-                  alignItems: "center",
-                  top: -130,
-                  marginLeft: 290,
-                }}
-              >
-                <View
                   style={{
                     alignItems: "center",
-                    width: 120,
-                    height: 120,
-                    top: 10,
+                    top: -130,
+                    marginLeft: 290,
                   }}
                 >
-                  <Image
-                   source={user.avatar}
+                  <View
                     style={{
-                      top: 10,
+                      alignItems: "center",
                       width: 120,
                       height: 120,
-                    }}
-                    
-                  />
-                </View>
-                <View style={{ margin: 0, top: 30 }}>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      color: "white",
+                      top: 10,
                     }}
                   >
-                    {user.name}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      color: "white",
-                    }}
-                  >
-                    {user.score}
-                  </Text>
+                    <Image
+                      source={user.avatar}
+                      style={{
+                        top: 10,
+                        width: 120,
+                        height: 120,
+                      }}
+                    />
+                  </View>
+                  <View style={{ margin: 0, top: 30 }}>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "white",
+                      }}
+                    >
+                      {user.name}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "white",
+                      }}
+                    >
+                      {user.score}
+                    </Text>
+                  </View>
                 </View>
-              </View>
               )}
             </View>
           ))}
@@ -231,9 +241,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 500,
-    height: 120,
-    width: 120,
+    top: 600,
+    height: 100,
+    width: 100,
     // left: -100,
   },
   optionText: {
