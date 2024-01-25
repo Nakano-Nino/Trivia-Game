@@ -1,35 +1,56 @@
-import LottieView from "lottie-react-native";
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { initializeSocket } from "../utils/socket";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import LottieView from "lottie-react-native"
+import React, { useEffect, useState } from "react"
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import { initializeSocket } from "../utils/socket"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import axios from "axios"
 const PodiumWinner = () => {
-  const socket = initializeSocket();
-  const navigate = useNavigation();
-  const [data, setData] = useState([]);
-  const [roomId, setRoomId] = useState("");
-  // console.log("info user:", data);
+  const socket = initializeSocket()
+  const navigate = useNavigation()
+  const [data, setData] = useState([])
+  const [roomId, setRoomId] = useState("")
+  console.log("info user:", data)
 
   const getRoomId = async () => {
-    const roomId:any = await AsyncStorage.getItem("roomId");
-    setRoomId(roomId);
+    const roomId: any = await AsyncStorage.getItem("roomId")
+    setRoomId(roomId)
+  }
+
+  const awardDiamonds = async (email: string) => {
+    try {
+      const response = await axios.post(
+        "https://92b308gx-50051.asse.devtunnels.ms/update-users",
+        { email }
+      )
+
+      console.log("Diamonds awarded successfully:", response.data)
+    } catch (error) {
+      console.error("Error awarding diamonds:", error)
+    }
   }
 
   useEffect(() => {
-    getRoomId();
-    socket.on('finish', async (user) => {
-      setData(user.sort((a:any, b:any) => b.score - a.score));
-      await AsyncStorage.removeItem("roomId");
+    getRoomId()
+    socket.on("finish", async (user) => {
+      setData(user.sort((a: any, b: any) => b.score - a.score))
+      const winnerEmail = data.length > 0 ? data[0].email : ""
+      await AsyncStorage.removeItem("roomId")
+
+      if (winnerEmail) {
+        awardDiamonds(winnerEmail)
+      }
     })
-  }, [roomId]);
+  }, [roomId])
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
 
       <View style={{ alignItems: "center" }}>
-      <View style={{ alignItems: "center", position: "relative", top: 100 }}>
-          <Text style={{fontWeight: "bold", fontSize: 30, color: "white", }}>Congratulation✨</Text>
+        <View style={{ alignItems: "center", position: "relative", top: 100 }}>
+          <Text style={{ fontWeight: "bold", fontSize: 30, color: "white" }}>
+            Congratulation✨
+          </Text>
         </View>
         <View style={{ alignItems: "center", position: "relative", top: 80 }}>
           <Image
@@ -39,7 +60,7 @@ const PodiumWinner = () => {
         </View>
         {data.length !== 0 &&
           data.map((user: any, index) => (
-            <View style={{ alignItems: "center", top : -200 }}>
+            <View style={{ alignItems: "center", top: -200 }}>
               {/* win 2  */}
               {index > 0 && index < 2 && (
                 <View
@@ -77,7 +98,7 @@ const PodiumWinner = () => {
                     >
                       {user.name}
                     </Text>
-                    <Text 
+                    <Text
                       style={{
                         fontSize: 20,
                         fontWeight: "bold",
@@ -145,53 +166,52 @@ const PodiumWinner = () => {
               {/* win 3  */}
               {index > 1 && index < 3 && (
                 <View
-                style={{
-                  alignItems: "center",
-                  top: -130,
-                  marginLeft: 290,
-                }}
-              >
-                <View
                   style={{
                     alignItems: "center",
-                    width: 120,
-                    height: 120,
-                    top: 10,
+                    top: -130,
+                    marginLeft: 290,
                   }}
                 >
-                  <Image
-                   source={user.avatar}
+                  <View
                     style={{
-                      top: 10,
+                      alignItems: "center",
                       width: 120,
                       height: 120,
-                    }}
-                    
-                  />
-                </View>
-                <View style={{ margin: 0, top: 30 }}>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      color: "white",
+                      top: 10,
                     }}
                   >
-                    {user.name}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      color: "white",
-                    }}
-                  >
-                    {user.score}
-                  </Text>
+                    <Image
+                      source={user.avatar}
+                      style={{
+                        top: 10,
+                        width: 120,
+                        height: 120,
+                      }}
+                    />
+                  </View>
+                  <View style={{ margin: 0, top: 30 }}>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "white",
+                      }}
+                    >
+                      {user.name}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "white",
+                      }}
+                    >
+                      {user.score}
+                    </Text>
+                  </View>
                 </View>
-              </View>
               )}
             </View>
           ))}
@@ -209,10 +229,10 @@ const PodiumWinner = () => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default PodiumWinner;
+export default PodiumWinner
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
@@ -285,4 +305,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-});
+})
