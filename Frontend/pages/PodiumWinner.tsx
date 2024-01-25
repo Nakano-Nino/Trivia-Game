@@ -1,28 +1,47 @@
-import LottieView from "lottie-react-native";
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { initializeSocket } from "../utils/socket";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import LottieView from "lottie-react-native"
+import React, { useEffect, useState } from "react"
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import { initializeSocket } from "../utils/socket"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import axios from "axios"
 const PodiumWinner = () => {
-  const socket = initializeSocket();
-  const navigate = useNavigation();
-  const [data, setData] = useState([]);
-  const [roomId, setRoomId] = useState("");
-  console.log("info user:", data);
+  const socket = initializeSocket()
+  const navigate = useNavigation()
+  const [data, setData] = useState([])
+  const [roomId, setRoomId] = useState("")
+  console.log("info user:", data)
 
   const getRoomId = async () => {
-    const roomId:any = await AsyncStorage.getItem("roomId");
-    setRoomId(roomId);
+    const roomId: any = await AsyncStorage.getItem("roomId")
+    setRoomId(roomId)
+  }
+
+  const awardDiamonds = async (email: string) => {
+    try {
+      const response = await axios.post(
+        "https://92b308gx-50051.asse.devtunnels.ms/update-users",
+        { email }
+      )
+
+      console.log("Diamonds awarded successfully:", response.data)
+    } catch (error) {
+      console.error("Error awarding diamonds:", error)
+    }
   }
 
   useEffect(() => {
-    getRoomId();
-    socket.on('finish', async (user) => {
-      setData(user.sort((a:any, b:any) => b.score - a.score));
-      await AsyncStorage.removeItem("roomId");
+    getRoomId()
+    socket.on("finish", async (user) => {
+      setData(user.sort((a: any, b: any) => b.score - a.score))
+      const winnerEmail = data.length > 0 ? data[0].email : ""
+      await AsyncStorage.removeItem("roomId")
+
+      if (winnerEmail) {
+        awardDiamonds(winnerEmail)
+      }
     })
-  }, [roomId]);
+  }, [roomId])
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -30,7 +49,7 @@ const PodiumWinner = () => {
       <View style={{ alignItems: "center" }}>
         <View style={{ alignItems: "center", position: "absolute", top: 50 }}>
           <Image
-            style={{ width: 420, height: 220, }}
+            style={{ width: 420, height: 220 }}
             source={require("../assets/image/congratulation.png")}
           />
           <View style={{ alignItems: "center", position: "absolute", top: 80 }}>
@@ -88,7 +107,7 @@ const PodiumWinner = () => {
                     >
                       {user.name}
                     </Text>
-                    <Text 
+                    <Text
                       style={{
                         fontSize: 20,
                         fontWeight: "bold",
@@ -219,10 +238,10 @@ const PodiumWinner = () => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default PodiumWinner;
+export default PodiumWinner
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
@@ -295,4 +314,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-});
+})
