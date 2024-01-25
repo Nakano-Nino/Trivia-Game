@@ -84,7 +84,20 @@ const Question = () => {
                   }
                 : {
                   backgroundColor: "aqua"
+                }
+                ? question[option] == question.answer && question.time === 0
+                ? {
+                  backgroundColor: "lime",
+                  borderColor: "green",
+                }
+                : {
+                  backgroundColor: "gray",
+                  borderColor: "red",
+                }
+                : {
+                  backgroundColor: "aqua"
                 },
+              
             ]}
             disabled={question.time === 0}
             onPress={() => handleAnswer(question[option], option)}

@@ -48,6 +48,7 @@ export default function usePlay() {
     socket.emit('answer', {
       name: user.name,
       avatar: user.avatar,
+      email: user.email,
       answer: option,
       roomId,
     });
@@ -91,7 +92,7 @@ export default function usePlay() {
 
       socket.on('answer', (data:any) => {
         setUserAnswer(data)
-        // console.log("Updated answer: ", data)
+        console.log("Updated answer: ", data)
       })
 
       socket.on('user', async (data) => {

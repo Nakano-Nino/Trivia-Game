@@ -22,7 +22,7 @@ const FindMatch = () => {
   >([]);
   const [time, setTime] = useState(10);
   const token = localStorage.getItem("user") + "";
-  const { avatar, name } = jwtDecode<DecodedToken>(token);
+  const { avatar, name, email } = jwtDecode<DecodedToken>(token);
 
   const renderItem = ({ item }: any) => (
     // <View style={styles.table}>
@@ -45,6 +45,7 @@ const FindMatch = () => {
       socket.emit("joinLobby", {
         name: name,
         avatar: avatar,
+        email: email
       });
 
       socket.on("joinLobby", async (user, timeout, roomId) => {
