@@ -9,7 +9,7 @@ const PodiumWinner = () => {
   const navigate = useNavigation();
   const [data, setData] = useState([]);
   const [roomId, setRoomId] = useState("");
-  // console.log("info user:", data);
+  console.log("info user:", data);
 
   const getRoomId = async () => {
     const roomId:any = await AsyncStorage.getItem("roomId");

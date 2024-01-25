@@ -77,6 +77,7 @@ export default async function lobby(io: Server, socket: Socket) {
         lobbies[currentLobby].users.push({
             name: message.name,
             avatar: message.avatar,
+            email: message.email,
             id: socket.id,
             score: 0,
         });
@@ -91,8 +92,9 @@ export default async function lobby(io: Server, socket: Socket) {
             if (lobbies[currentLobby].timeout <= 3) {
                 if (lobbies[currentLobby].users.length < 4) {
                     lobbies[currentLobby].users.push({
-                        name: `bot-${lobbies[currentLobby].users.length + 1}`,
+                        name: `CPU-${lobbies[currentLobby].users.length + 1}`,
                         avatar: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                        email: "bot@flaticon.com",
                         id: Math.random().toString(),
                         score: 0,
                     });
