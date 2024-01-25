@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package protogrpc;
+
+option go_package = "grpc-gateway/pb";
+
+import "google/api/annotations.proto";
+
+message ResAvatar {
+    string id = 1;
+    string name = 2;
+    string secureUrl = 3;
+}
+
+message RequestUser {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string avatar = 4;
+    repeated ResAvatar purchasedAvatar = 5;
+    int64 diamond = 6;
+    string role = 7;
+}
+
+message ResponseOneUser {
+    int32 code = 1;
+    RequestUser data = 2;
+}
+
+message Email {
+    string email = 1;
+}
+
+message EmptyUser {}
+
+service User {
+    rpc GetOneUser(Email) returns (ResponseOneUser) {
+        option (google.api.http) = {
+            get: "/get-user"
+        };
+    }
+
+    rpc UpdateUser(Email) returns (ResponseOneUser) {
+        option (google.api.http) = {
+            put: "/update-user"
+        };
+    }
+}
