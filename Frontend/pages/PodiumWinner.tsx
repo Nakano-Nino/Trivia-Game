@@ -46,22 +46,21 @@ const PodiumWinner = () => {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
 
-      <View style={{ alignItems: "center" }}>
-        <View style={{ alignItems: "center", position: "absolute", top: 50 }}>
-          <Image
-            style={{ width: 420, height: 220 }}
-            source={require("../assets/image/congratulation.png")}
+      <View style={{ alignItems: "center", position: "absolute", top: 50 }}>
+        <Image
+          style={{ width: 420, height: 220 }}
+          source={require("../assets/image/congratulation.png")}
+        />
+        <View style={{ alignItems: "center", position: "absolute", top: 80 }}>
+          <LottieView
+            source={require("../assets/lottivew/fireworks.json")}
+            autoPlay
+            loop
           />
-          <View style={{ alignItems: "center", position: "absolute", top: 80 }}>
-            <LottieView
-              source={require("../assets/lottivew/fireworks.json")}
-              autoPlay
-              loop
-            />
-          </View>
         </View>
-
-        <View style={{ alignItems: "center", position: "relative", top: 8 }}>
+      </View>
+      <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", top: 180 }}>
           <Image
             style={{ width: 425, height: 400, position: "relative" }}
             source={require("../assets/image/awards.png")}
@@ -69,13 +68,13 @@ const PodiumWinner = () => {
         </View>
         {data.length !== 0 &&
           data.map((user: any, index) => (
-            <View style={{ alignItems: "center", top: -200 }}>
+            <View style={{ alignItems: "center", top: -100 }}>
               {/* win 2  */}
               {index > 0 && index < 2 && (
                 <View
                   style={{
                     alignItems: "center",
-                    top: -130,
+                    top: -100,
                     marginLeft: -285,
                   }}
                 >
@@ -84,19 +83,19 @@ const PodiumWinner = () => {
                       alignItems: "center",
                       width: 120,
                       height: 120,
-                      top: 10,
+                      top: 50,
                     }}
                   >
                     <Image
                       source={user.avatar}
                       style={{
-                        top: 10,
+                        top: -60,
                         width: 120,
                         height: 120,
                       }}
                     />
                   </View>
-                  <View style={{ margin: -100, top: 130 }}>
+                  <View style={{ margin: -100, top: 105 }}>
                     <Text
                       style={{
                         fontSize: 20,
