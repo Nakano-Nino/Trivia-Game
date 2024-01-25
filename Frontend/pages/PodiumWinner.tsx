@@ -1,47 +1,71 @@
-import LottieView from "lottie-react-native"
-import React, { useEffect, useState } from "react"
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
-import { useNavigation } from "@react-navigation/native"
-import { initializeSocket } from "../utils/socket"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import axios from "axios"
+import LottieView from "lottie-react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { initializeSocket } from "../utils/socket";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
+interface DecodedToken {
+  avatar: string;
+  name: string;
+  diamond: string;
+  email: string;
+}
+
 const PodiumWinner = () => {
-  const socket = initializeSocket()
-  const navigate = useNavigation()
-  const [data, setData] = useState([])
-  const [roomId, setRoomId] = useState("")
-  console.log("info user:", data)
+  const socket = initializeSocket();
+  const navigate = useNavigation();
+  const [data, setData] = useState<any[]>([]);
+  const [roomId, setRoomId] = useState("");
+  const token = localStorage.getItem("user") + "";
+  const userToken = jwtDecode<DecodedToken>(token);
+  const email = userToken.email;
+  console.log(email);
+  console.log("info user:", data[0]?.email);
 
   const getRoomId = async () => {
-    const roomId: any = await AsyncStorage.getItem("roomId")
-    setRoomId(roomId)
-  }
-
-  const awardDiamonds = async (email: string) => {
-    try {
-      const response = await axios.post(
-        "https://92b308gx-50051.asse.devtunnels.ms/update-users",
-        { email }
-      )
-
-      console.log("Diamonds awarded successfully:", response.data)
-    } catch (error) {
-      console.error("Error awarding diamonds:", error)
-    }
-  }
+    const roomId: any = await AsyncStorage.getItem("roomId");
+    setRoomId(roomId);
+  };
 
   useEffect(() => {
-    getRoomId()
+    getRoomId();
     socket.on("finish", async (user) => {
-      setData(user.sort((a: any, b: any) => b.score - a.score))
-      const winnerEmail = data.length > 0 ? data[0].email : ""
-      await AsyncStorage.removeItem("roomId")
+      const sorted = user.sort((a: any, b: any) => b.score - a.score);
+      setData(sorted);
+    });
+  }, [roomId]);
 
-      if (winnerEmail) {
-        awardDiamonds(winnerEmail)
+  useEffect(() => {
+    if (data.length > 0) {
+      console.log("data ada");
+      if (data[0]?.email == email) {
+        console.log("email sesuai ");
+
+        (async () => {
+          console.log("Yes you're the winner");
+          try {
+            const response = await axios.put(
+              "https://92b308gx-50051.asse.devtunnels.ms/update-user?email=" +email,
+            );
+            await AsyncStorage.removeItem("roomId");
+
+            console.log("Diamonds awarded successfully:", response.data);
+          } catch (error) {
+            console.error("Error awarding diamonds:", error);
+          }
+        })()
+      } else {
+        console.log("User is not the winner");
       }
-    })
-  }, [roomId])
+    }
+  }, [data]);
+  const handleBackHome = () => {
+    navigate.navigate("StartGame" as never);
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image style={styles.background} source={require("../assets/bg2.png")} />
@@ -225,9 +249,7 @@ const PodiumWinner = () => {
           ))}
 
         <View style={styles.backButton}>
-          <TouchableOpacity
-            onPress={() => navigate.navigate("StartGame" as never)}
-          >
+          <TouchableOpacity onPress={handleBackHome}>
             <LottieView
               source={require("../assets/lottivew/back.json")}
               autoPlay
@@ -237,10 +259,10 @@ const PodiumWinner = () => {
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default PodiumWinner
+export default PodiumWinner;
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
@@ -313,4 +335,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-})
+});
